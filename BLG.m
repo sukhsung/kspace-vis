@@ -27,6 +27,7 @@ classdef BLG < graphene
                 self.setTheta(deg2rad(5));
                 disp('default twist angle = 5 deg')
             end
+            self.setTitle(self.stacking)
                 
         end 
         function setTheta(self,val)
@@ -55,7 +56,7 @@ classdef BLG < graphene
                     mag = [mag_t;mag_b];
             end
             if self.includeScat
-                mag = self.applyScat(pos,mag);
+                mag = self.applyScat(pos,mag,6);
             end
         end
     end

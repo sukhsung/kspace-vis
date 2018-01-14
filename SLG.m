@@ -9,8 +9,9 @@ classdef SLG < graphene
             pos(:,3) = kz;
             mag = self.fg_hk(h,k);
             if self.includeScat
-                mag = self.applyScat(pos,mag);
+                mag = self.applyScat(pos,mag,6);
             end
+            self.setTitle('SLG')
         end
     end
 end

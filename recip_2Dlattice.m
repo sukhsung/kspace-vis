@@ -16,9 +16,13 @@ classdef recip_2Dlattice < handle
         b1
         b2
         lambda
+        title_str
     end
         
     methods   
+        function setTitle(self,val)
+            self.title_str=val;
+        end
         function setSpotcut(self,val)
             self.spotcut=val;
         end 
@@ -143,12 +147,16 @@ classdef recip_2Dlattice < handle
             scatter3(pos(:,1),pos(:,2),pos(:,3),700*int,rgb,'.')
             axis equal
         end
-        
-        
         function draw(self)
             [pos,mag] = self.calculate();
             self.posmagDraw(pos,mag);
+            if isempty(self.title_str)
+                self.setTitle('')
+            end
+            title(self.title_str)
         end
+        
+
         function draw3D(self)
             self.setKzMode('constant');
             kzStep = 64;
@@ -160,6 +168,16 @@ classdef recip_2Dlattice < handle
                 mag = [mag;mag_cur];
             end
             self.posmagDrawPhase(pos,mag);
+            title(self.title_str)
+        end
+        function mag = applyScat(self,pos,mag,element)
+            % Calculate scattering factor and apply to recip-space magnitude vector
+            % Utilizes eDiff_ScatteringFactor by R Hovden.
+            % Written by Suk Hyun Sung, sukhsung@umich.edu
+            % Jan. 05 2018
+            r = sqrt(pos(:,1).^2+pos(:,2).^2);
+            fe = eDiff_ScatteringFactor(element,r/(2*pi));
+            mag = mag.*fe;
         end
     end
     

@@ -19,15 +19,6 @@ classdef graphene < recip_2Dlattice
             fg = 8*pi^2/self.area*exp(-1i*pi/3*(h+k)).*cos(pi/3*(h+k));
         end
         
-        function mag = applyScat(self,pos,mag)
-            % Calculate scattering factor and apply to recip-space magnitude vector
-            % Utilizes eDiff_ScatteringFactor by R Hovden.
-            % Written by Suk Hyun Sung, sukhsung@umich.edu
-            % Jan. 05 2018
-            r = sqrt(pos(:,1).^2+pos(:,2).^2);
-            fe = eDiff_ScatteringFactor(6,r/(2*pi));
-            mag = mag.*fe;
-        end
     end
 end
 
