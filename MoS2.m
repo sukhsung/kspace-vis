@@ -12,7 +12,7 @@ classdef MoS2 < TMD
             if isempty(varargin)
                 obj.setStacking('1H')
             else
-                obj.setStacking(varargin{1})
+                obj.setStacking(val)
             end
         end
     end
