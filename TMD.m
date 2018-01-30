@@ -33,62 +33,72 @@ classdef TMD < recip_2Dlattice
                     [pos,mag] = self.calculate1T;
                 case '2H'
                     [pos,mag] = self.calculate2H;
-                case '3H'
-                    [pos,mag] = self.calculate3H;
+                case 'nH'
+                    [pos,mag] = self.calculateNH(400);
             end
             self.setTitle([self.name,' ', self.stacking]) 
         end
         
-        function [pos, mag] = calculate2H(self)
-            [pos0, mag0] = self.calculate1H(); %1H layer centered on 0
-                        
-            pos = pos0;
-            [kz] = self.kzProvider(pos(:,1),pos(:,2));
-            
-            mag = mag0 .* exp(-1i.*self.lambda .* -1./2 .* kz); %translate down by 1/2 lambda
-            
-            mag = mag + conj(mag); %add second (inverted) layer
-            
-            
-        end
-        
-%         function [pos, mag] = calculate2H(self)
-%             [pos, h, k] = recip2DMeshGrid(self);
-%             [kz] = self.kzProvider(pos(:,1),pos(:,2));
-%             pos(:,3) = kz;
-%             mag = ones(length(pos),1);
-%             scat_tm = self.applyScat(pos,mag,self.tm);
-%             scat_ch = self.applyScat(pos,mag,self.ch);
-%             
-%             ICS = self.lambda_tmch*2;
-%             IMS = self.lambda;
-%             
-%             s_tm = scat_tm.*( exp(-1i*ICS*kz/2)  +  exp(-2*pi*1i/3*(h+k)).*exp(-1i*(ICS/2+IMS)*kz)  );
-%             s_ch = scat_ch.*( exp(-2*pi*1i/3*(h+k))    +   exp(-2*pi*1i/3*(h+k)).*exp(-1i*ICS*kz)  +  exp(-1i*IMS*kz)  +  exp(-1i*(IMS+ICS)*kz)   );
-%             
-%             mag = s_tm +s_ch;
-%             mag = mag*(2*pi)^2;
-% 
-%         end
-        
-        function [pos, mag] = calculate3H(self)
-                        [pos, h, k] = recip2DMeshGrid(self);
+       function [pos,mag] = stacking_1H(self)
+            [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
             mag = ones(length(pos),1);
-            scat_tm = self.applyScat(pos,mag,self.tm);
-            scat_ch = self.applyScat(pos,mag,self.ch);
-            
-            ICS = self.lambda_tmch*2;
-            IMS = self.lambda;
-            
-            s_tm = scat_tm.*( exp(-1i*ICS*kz/2)  +  exp(-2*pi*1i/3*(h+k)).*exp(-1i*(ICS/2+IMS)*kz)  + exp(-1i*(2*IMS+ICS/2)*kz)  );
-            s_ch = scat_ch.*( exp(-2*pi*1i/3*(h+k))    +   exp(-2*pi*1i/3*(h+k)).*exp(-1i*ICS*kz)  +  exp(-1i*IMS*kz)  +  exp(-1i*(IMS+ICS)*kz) +  exp(-2*pi*1i/3*(h+k)).*exp(-1i*2*IMS*kz)    +   exp(-2*pi*1i/3*(h+k)).*exp(-1i*(ICS+2*IMS)*kz)  );
-            
+            s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+            s_ch = self.applyScat(pos,mag,self.ch);
+            s_ch = s_ch*2.*cos(kz*self.lambda_tmch).*exp(2i*pi/6*(h+k));
             mag = s_tm +s_ch;
             mag = mag*(2*pi)^2;
         end
         
+        
+        function [pos, mag] = calculate2H(self)
+            [pos0, mag0] = self.stacking_1H(); %1H layer centered on 0
+                        
+            pos = pos0;
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            
+            
+            mag = mag0 .* exp(-1i.*self.lambda .* -1./2 .* kz) ; %translate down by 1/2 lambda, in plane by 1/6a
+            
+            mag = mag + conj(mag); %add second (inverted) layer
+            
+            
+            
+        end
+        
+        function [pos, mag] = calculateNH(self, N)
+            [pos0, mag0] = self.stacking_1H(); %1H layer centered on 0
+                        
+            pos = pos0;
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            
+            %first layer (translated down to make room for added)
+            mag = mag0 .* exp( -1i .* self.lambda .* -(1./2.*N -1./2) .* kz );
+            
+            %for each additional layer
+            for i = 2:N
+                %assumes starting at lambda/2 above origin (general pos for
+                %inverted, manipulated pos for non-inverted)
+                position_term = exp(-1i .* self.lambda .*  (-(1./2.*N -1./2) + (i-1.5)  )   .* kz);
+                %if even layer -> inversion
+                if( mod(i,2) == 0)
+                    %translate initial layer below origin, invert above
+                    %origin (conjugate), finally translate layer to
+                    %appropriate position, and add to structure
+                    mag = mag + position_term.*conj( mag0 .* exp(-1i.*self.lambda .* -1./2 .* kz));
+                    
+                %odd layers -> no inversion
+                else
+                    %translate initial layer to match inverted position, 
+                    %then translate to appropriate position, and finally
+                    %add to structure
+                    mag = mag + position_term.*mag0.* exp(-1i .*self.lambda .* 1 .* kz);
+                end
+            end
+
+        end
+
         function [pos,mag] = calculate1H(self)
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
@@ -114,7 +124,7 @@ classdef TMD < recip_2Dlattice
         end
         
         function setStacking(self,val)
-            if strcmp(val,'1H') || strcmp(val,'1T') || strcmp(val,'2H')|| strcmp(val,'3H')
+            if strcmp(val,'1H') || strcmp(val,'1T') || strcmp(val,'2H')|| strcmp(val,'nH')
                 self.stacking=val;
             else
                 disp('Invalid Stacking, Setting to 1H')

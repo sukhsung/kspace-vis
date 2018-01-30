@@ -2,39 +2,39 @@
 %added return of the pos, mag from draw3D
 %added intensity factor
 
-m = MoS2('2H');
+m = MoS2('nH');
 
 %% 3D View
 
-%   m.setSpotcut(2);
-%  m.setKillZero(2);
-% m.setIntensityFactor(3);
-% [pos, mag] = m.draw3D;
-% 
-% 
-% %drawing hexagon around first order peaks
-% colormap(gray)
-% bound = 3;
-% %xlim([-bound bound])
-% %ylim([-bound bound])
-% %drawing hexagon at kz = 0
-% kz0 = pos(pos(:,3)==0 & pos(:,2) < bound & pos(:,2) > -bound & pos(:,1) < bound & pos(:,1) > -bound & ~( pos(:,1) ==0 & pos(:,2)==0  ),:);
-% phase = atan2(kz0(:,2),kz0(:,1))*180/pi;
-% kz0 = [kz0,phase];
-% kz0 = sortrows(kz0,4);
-% kz0 = [kz0; kz0(1,:)]; %completing hexagon (wrap back to first point)
-% if(1)
-%     plot3(kz0(:,1),kz0(:,2),kz0(:,3));
-% end
-% 
-% view(190, 34)
+  m.setSpotcut(2);
+ m.setKillZero(2);
+m.setIntensityFactor(3);
+[pos, mag] = m.draw3D;
+
+
+%drawing hexagon around first order peaks
+colormap(gray)
+bound = 3;
+%xlim([-bound bound])
+%ylim([-bound bound])
+%drawing hexagon at kz = 0
+kz0 = pos(pos(:,3)==0 & pos(:,2) < bound & pos(:,2) > -bound & pos(:,1) < bound & pos(:,1) > -bound & ~( pos(:,1) ==0 & pos(:,2)==0  ),:);
+phase = atan2(kz0(:,2),kz0(:,1))*180/pi;
+kz0 = [kz0,phase];
+kz0 = sortrows(kz0,4);
+kz0 = [kz0; kz0(1,:)]; %completing hexagon (wrap back to first point)
+if(1)
+    plot3(kz0(:,1),kz0(:,2),kz0(:,3));
+end
+
+view(190, 34)
 
 %% Cross Sectional
-
-m.setSpotcut(2);
-m.setKillZero(2);
-m.setIntensityFactor(4);
-[pos, mag] = m.drawCrossSection();
+% 
+% m.setSpotcut(2);
+% m.setKillZero(2);
+% m.setIntensityFactor(4);
+% [pos, mag] = m.drawCrossSection();
 
 %% Tilt Pattern
 
