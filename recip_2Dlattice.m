@@ -198,10 +198,10 @@ classdef recip_2Dlattice < handle
 
         function [pos, mag] = draw3D(self)
             self.setKzMode('constant');
-            kzStep = 64;
+            kzStep = 2^6;
             pos =[];    mag = [];
             for i = -kzStep:kzStep
-                self.setKzVal(pi/(kzStep/2)*i/self.lambda);
+                self.setKzVal(pi/(kzStep/2)*2*i/self.lambda);
                 [pos_cur,mag_cur] = self.calculate;
                 pos = [pos;pos_cur];
                 mag = [mag;mag_cur];
@@ -210,18 +210,29 @@ classdef recip_2Dlattice < handle
             title(self.title_str)
         end
         
-        function [pos, mag] = drawCrossSection(self)
-            self.setKzMode('constant');
-            kzStep = 64;
+        function [pos, mag] = drawCrossSection(self, angle)
+            self.setKzMode('constant')
+            kzStep = 2^6;%64.*64;
             pos =[];    mag = [];
             for i = -kzStep:kzStep
-                self.setKzVal(pi/(kzStep/2)*i/self.lambda);
+                %meaning:
+                %= pi * (i/kzstep) * 4 * 1/lambda 
+                self.setKzVal(pi/(kzStep/2)*i/(self.lambda./2)); %-/+ kz step should be pi, total range should be ???
                 [pos_cur,mag_cur] = self.calculate;
                 pos = [pos;pos_cur];
                 mag = [mag;mag_cur];
             end
             
+            
+            
             %cutting out all peaks not in correct 2D plane
+            tolerance = 0.5;
+            %subset = pos(:,1) < tolerance & pos(:,1) > -tolerance & pos(:,2) < maxXY & pos(:,2) > -maxXY;
+            
+            subsetAngle = (tan(pos(:,2)./pos(:,1)) > angle .* pi./ 180-tolerance & tan(pos(:,2)./pos(:,1)) <  angle .*pi./180+tolerance);
+            subsetCenter = (round(pos(:,1),2) == 0 & round(pos(:,2),2) ==0);
+            pos = pos(subsetAngle | subsetCenter,:);
+            mag = mag(subsetAngle | subsetCenter);
             %plane =  
             %correct_positions = 
             
@@ -229,7 +240,7 @@ classdef recip_2Dlattice < handle
             title(self.title_str)
         end
         
-        function getTiltSeries(self)            
+        function [tiltrange, I] = getTiltSeries(self)            
             self.setKzMode('tilted');
             tiltrange = self.tilt_start:.1*pi/180:self.tilt_end;
             I = [];

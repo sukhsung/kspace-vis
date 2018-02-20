@@ -26,15 +26,15 @@ classdef TMD < recip_2Dlattice
         end
         
         function [pos,mag] = calculate(self)
-            switch self.stacking
-                case '1H'
+            if self.stacking(length(self.stacking)) == 'H'
+                layers = str2num(self.stacking(1:length(self.stacking)-1));
+                if(layers == 1)
                     [pos,mag] = self.calculate1H;
-                case '1T'
-                    [pos,mag] = self.calculate1T;
-                case '2H'
-                    [pos,mag] = self.calculate2H;
-                case 'nH'
-                    [pos,mag] = self.calculateNH(400);
+                else
+                    [pos, mag] = self.calculateNH(layers);
+                end
+            elseif self.stacking(length(self.stacking)) == 'T'
+                [pos,mag] = self.calculate1T;
             end
             self.setTitle([self.name,' ', self.stacking]) 
         end
@@ -124,12 +124,12 @@ classdef TMD < recip_2Dlattice
         end
         
         function setStacking(self,val)
-            if strcmp(val,'1H') || strcmp(val,'1T') || strcmp(val,'2H')|| strcmp(val,'nH')
-                self.stacking=val;
-            else
-                disp('Invalid Stacking, Setting to 1H')
-                self.stacking = '1H';
-            end
+            %if strcmp(val,'1H') || strcmp(val,'1T') || strcmp(val,'2H')|| strcmp(val,'nH')
+            self.stacking=val;
+            %else
+            %    disp('Invalid Stacking, Setting to 1H')
+            %    self.stacking = '1H';
+            %end
         end 
         
         function setTm(self,val)

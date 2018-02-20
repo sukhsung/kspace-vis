@@ -1,7 +1,7 @@
 function [ k ] = eDiff_Wavenumber( kev )
 %EDIFF_INCIDENTVECTOR get wavevector based on keV.  Returns value in Ang^-1
 
-    wav = electronwavelength(kev);
+    wav = electronwavelength(kev)
     
     k = 2*pi / wav;
 
