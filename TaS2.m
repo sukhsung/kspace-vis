@@ -3,16 +3,25 @@ classdef TaS2 < TMD
     end
     methods
         function obj = TaS2(varargin)
-            obj = obj@TMD(3.18);
+            %1T (1537360)
+            obj = obj@TMD(3.35);
+            obj.setLambda(5.86);
+            obj.setLambda_tmch(1.465);
+
+            %2H' (9007815)
+%             obj = obj@TMD(3.314);
+%             obj.setLambda(6.04850);
+%             obj.setLambda_tmch(3.11619/2);
+            
+            
             obj.setName('TaS2');
             obj.setTm(73);
             obj.setCh(16);
-            obj.setLambda(6.144);               %Need to be confirmed
-            obj.setLambda_tmch(3.241/2);        %Need to be confirmed
+
             if isempty(varargin)
                 obj.setStacking('1H')
             else
-                obj.setStacking(val)
+                obj.setStacking(varargin{1})
             end
         end
     end

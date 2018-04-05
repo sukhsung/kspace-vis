@@ -91,7 +91,7 @@ classdef recip_2Dlattice < handle
                     k_rho_sq = (kx.^2+ky.^2);    
                     K = eDiff_Wavenumber(self.keV);
                     kz = K-sqrt(K^2 -k_rho_sq);
-                case 'tilted'
+                case 'tilted_ewald'
                     k = eDiff_Wavenumber(self.keV);
                     phi = self.tilt_val;
                     theta = self.rotation;
@@ -99,6 +99,12 @@ classdef recip_2Dlattice < handle
                     qxo = k*sin(phi)*cos(theta);
                     qyo = k*sin(phi)*sin(theta);
                     kz = qzo - sqrt(k^2 - (kx-qxo).^2 - (ky-qyo).^2);
+                case 'tilted_constant'
+                    k = eDiff_Wavenumber(self.keV);
+                    phi = self.tilt_val;
+                    theta = self.rotation;
+                    k_rho = sqrt(kx.^2+ky.^2);
+                    kz = k_rho.*tan(phi);%k.*cos(phi)-sqrt(k.^2 - k_rho.^2)
                 otherwise
                     error('invalid mode')
             end
@@ -130,7 +136,7 @@ classdef recip_2Dlattice < handle
             end
             % calculate intensity and normalize
             int = mag.*conj(mag);
-            int = int/max(int);
+            int = int/max(int).*1000;
 
             % remove intensities below cutoff
             pos(int<=self.intcut,:) =[];
@@ -144,6 +150,9 @@ classdef recip_2Dlattice < handle
             %my colors
             phase = angle(mag);
             rgb = phase2color(phase);
+            
+            rgb = pos2color(pos);
+
 
             % Draw
             figure
@@ -152,6 +161,11 @@ classdef recip_2Dlattice < handle
             %rgb(:,85) = [141,141,141];
             scatter(pos(:,1),pos(:,2),2500*int,rgb,'.')
             axis equal
+            
+            if isempty(self.title_str)
+                self.setTitle('')
+            end
+            title(self.title_str)
         end
 
         function posmagDrawPhase(self,pos,mag)
@@ -185,6 +199,11 @@ classdef recip_2Dlattice < handle
             hold on
             scatter3(pos(:,1),pos(:,2),pos(:,3),700*int,rgb,'.')
             axis equal
+            
+            if isempty(self.title_str)
+                self.setTitle('')
+            end
+            title(self.title_str)
         end
         function draw(self)
             [pos,mag] = self.calculate();
@@ -240,10 +259,11 @@ classdef recip_2Dlattice < handle
             title(self.title_str)
         end
         
-        function [tiltrange, I] = getTiltSeries(self)            
-            self.setKzMode('tilted');
+        function [tiltrange, I, kz] = getTiltSeries(self, kzmode, displaymode)            
+            self.setKzMode(['tilted_' kzmode]);
             tiltrange = self.tilt_start:.1*pi/180:self.tilt_end;
             I = [];
+            kz_holder  = [];
             pos0 = [];
             mag0 = [];
             %rgb = [];
@@ -264,7 +284,7 @@ classdef recip_2Dlattice < handle
                    pos0 = pos;
                    mag0 = mag;
                 end
-
+                kz_holder = [kz_holder, pos(:,3)];
                 I = [I, mag.*conj(mag)];
             end
             
@@ -273,12 +293,27 @@ classdef recip_2Dlattice < handle
 
             phase = angle(mag0);%[phase,angle(mag)];
             rgb = phase2color(phase);
-            f1 = figure;
-          
-            for i = 1:length(rgb)
-               plot(tiltrange(:).*180/pi, I(i,:),'LineWidth',3,'Color',rgb(i,:));
-               hold on;
+            if(displaymode == 'angle')
+                f1 = figure;            
+                rgb = pos2color(pos0);
+                for i = 1:length(rgb)
+                   plot(tiltrange(:).*180/pi, I(i,:),'LineWidth',3,'Color',rgb(i,:));
+                   hold on;
+                end
+            
+            elseif(displaymode=='kz')
+                f2 =figure;
+                rgb = pos2color(pos0);
+                for i = 1:length(rgb)
+                   plot(kz_holder(i,:), I(i,:),'LineWidth',3,'Color',rgb(i,:));
+                   hold on;
+                end
             end
+            
+            if isempty(self.title_str)
+                self.setTitle('')
+            end
+            title(self.title_str)
 
             %set(gca, 'ColorOrder', rgb,'NextPlot', 'replacechildren');
             %plot(tiltrange(:).*180/pi,(I(2,:)),'LineWidth', 3)
@@ -291,7 +326,7 @@ classdef recip_2Dlattice < handle
             % Utilizes eDiff_ScatteringFactor by R Hovden.
             % Written by Suk Hyun Sung, sukhsung@umich.edu
             % Jan. 05 2018
-            r = sqrt(pos(:,1).^2+pos(:,2).^2);
+            r = sqrt(pos(:,1).^2+pos(:,2).^2 +pos(:,3).^2); %
             fe = eDiff_ScatteringFactor(element,r/(2*pi));
             mag = mag.*fe;
         end

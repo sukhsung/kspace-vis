@@ -1,6 +1,7 @@
 classdef TMD < recip_2Dlattice
-    %GRAPHENE Summary of this class goes here
-
+    %TMDS
+    
+    
     
     properties (SetAccess = private, GetAccess = public)
         a
@@ -34,12 +35,24 @@ classdef TMD < recip_2Dlattice
                     [pos, mag] = self.calculateNH(layers);
                 end
             elseif self.stacking(length(self.stacking)) == 'T'
-                [pos,mag] = self.calculate1T;
+                layers = str2num(self.stacking(1:length(self.stacking)-1));
+                if(layers == 1)
+                    [pos,mag] = self.calculate1T;
+                else
+                    [pos, mag] = self.calculateNT(layers);
+                end
+            elseif self.stacking(length(self.stacking)) == 'A'
+                layers = str2num(self.stacking(1:length(self.stacking)-3));
+                if(layers == 1)
+                    [pos,mag] = self.calculate1H;
+                else
+                    [pos, mag] = self.calculateNHAA(layers);
+                end
             end
             self.setTitle([self.name,' ', self.stacking]) 
         end
-        
-       function [pos,mag] = stacking_1H(self)
+        %% arbitrary 2H (AB, MoS2 style) stackings
+        function [pos,mag] = stacking_1H(self)
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
@@ -50,22 +63,7 @@ classdef TMD < recip_2Dlattice
             mag = s_tm +s_ch;
             mag = mag*(2*pi)^2;
         end
-        
-        
-        function [pos, mag] = calculate2H(self)
-            [pos0, mag0] = self.stacking_1H(); %1H layer centered on 0
-                        
-            pos = pos0;
-            [kz] = self.kzProvider(pos(:,1),pos(:,2));
-            
-            
-            mag = mag0 .* exp(-1i.*self.lambda .* -1./2 .* kz) ; %translate down by 1/2 lambda, in plane by 1/6a
-            
-            mag = mag + conj(mag); %add second (inverted) layer
-            
-            
-            
-        end
+       
         
         function [pos, mag] = calculateNH(self, N)
             [pos0, mag0] = self.stacking_1H(); %1H layer centered on 0
@@ -98,7 +96,71 @@ classdef TMD < recip_2Dlattice
             end
 
         end
+        
+        %% Arbitrary 2H (AA, TaSe2 style) stackings
+        
+        function [pos,mag] = stacking_1HAA(self)
+            [pos,h,k] = recip2DMeshGrid(self);
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            pos(:,3) = kz;
+            mag = ones(length(pos),1);
+            s_tm = self.applyScat(pos,mag,self.tm);
+            s_ch = self.applyScat(pos,mag,self.ch);
+            s_ch = s_ch*2.*cos(kz*self.lambda_tmch).*exp(2i*pi/3*(h+k));
+            mag = s_tm +s_ch;
+            mag = mag*(2*pi)^2;
+        end
+        
+        function [pos, mag] = calculateNHAA(self, N)
+            [pos0, mag0] = self.stacking_1HAA(); %1H layer, metal on 0,0, ch on 1/3, 1/3
+                        
+            pos = pos0;
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            
+            %first layer (translated down to make room for added)
+            mag = mag0 .* exp( -1i .* self.lambda .* -(1./2.*N -1./2) .* kz );
+            
+            %for each additional layer
+            for i = 2:N
+                %assumes starting at lambda/2 above origin (general pos for
+                %inverted, manipulated pos for non-inverted)
+                position_term = exp(-1i .* self.lambda .*  (-(1./2.*N -1./2) + (i-1.5)  )   .* kz);
+                %if even layer -> inversion
+                if( mod(i,2) == 0)
+                    %translate initial layer below origin, invert above
+                    %origin (conjugate), finally translate layer to
+                    %appropriate position, and add to structure
+                    mag = mag + position_term.*conj( mag0 .* exp(-1i.*self.lambda .* -1./2 .* kz));
+                    
+                %odd layers -> no inversion
+                else
+                    %translate initial layer to match inverted position, 
+                    %then translate to appropriate position, and finally
+                    %add to structure
+                    mag = mag + position_term.*mag0.* exp(-1i .*self.lambda .* 1 .* kz);
+                end
+            end
 
+        end
+        %% calculate arbitrary thickness 1T
+        function [pos, mag] = calculateNT(self,N)
+            [pos0, mag0] = self.calculate1T(); %1H layer, metal on 0,0, ch on 1/3, 1/3
+                        
+            pos = pos0;
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            
+            %first layer (translated down to make room for added)
+            mag = mag0 .* exp( -1i .* self.lambda .* -(1./2.*N -1./2) .* kz );
+            
+            %for each additional layer
+            for i = 2:N
+               position_term = exp(-1i .* self.lambda .*  (-(1./2.*N -1./2) + (i-1.5)  )   .* kz);
+
+               mag = mag + position_term.*mag0.* exp(-1i .*self.lambda .* 1 .* kz);
+            end
+        end
+
+        %% specific stackings
         function [pos,mag] = calculate1H(self)
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
@@ -131,7 +193,7 @@ classdef TMD < recip_2Dlattice
             %    self.stacking = '1H';
             %end
         end 
-        
+        %% setters
         function setTm(self,val)
             self.tm = val;
         end
