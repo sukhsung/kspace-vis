@@ -44,9 +44,13 @@ classdef BLG < graphene
             mag = 0*mag;
 
             
-            a0 = (1 + 1.*exp(-2i.*pi./3 .*(h+k)));
-            b0 = (1 + 1.*exp(-2i.*pi./3 .*2.*(h+k)));
-            c0 = 1.*exp(-2i.*pi./3 .*(h+k)) + 1.*exp(-2i.*pi./3 .*2.*(h+k));
+            %a0 = (1 + 1.*exp(-2i.*pi./3 .*(h+k)));
+            %b0 = (1 + 1.*exp(-2i.*pi./3 .*2.*(h+k)));
+            %c0 = 1.*exp(-2i.*pi./3 .*(h+k)) + 1.*exp(-2i.*pi./3 .*2.*(h+k));
+            a0 = self.fg_hk(h,k);
+            b0 = self.fg_hk(h,k).*exp(-2i*pi/3*(h+k));
+            c0 = self.fg_hk(h,k).*exp(-4i*pi/3*(h+k));
+            
             
             for i = 1:length(self.stacking)
                layer = self.stacking(i);
@@ -62,7 +66,7 @@ classdef BLG < graphene
                end
             end
             
-            mag = s_g.*mag.*exp(1i.*self.lambda.*kz.*length(self.stacking)./2);
+            mag = s_g.*mag.*exp(1i.*self.lambda.*kz.*(1+length(self.stacking))./2);
 
         end
         

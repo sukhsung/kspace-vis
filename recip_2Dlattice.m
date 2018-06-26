@@ -81,6 +81,10 @@ classdef recip_2Dlattice < handle
         function [pos,h,k] = recip2DMeshGrid(self)
             [pos,h,k] = indexedMeshGrid(self.spotcut,self.b1,self.b2);
             pos = round(pos,self.rnd);
+            [~,ia,~] = unique(pos,'rows');
+            pos = pos(ia,:);
+            h = h(ia);
+            k = k(ia);
         end
         
         function [ kz ] = kzProvider(self,kx,ky)
@@ -270,9 +274,6 @@ classdef recip_2Dlattice < handle
             for tilt = tiltrange
                 self.tilt_val = tilt;
                 [pos, mag] = self.calculate;
-                [un,ia,ic] = unique(pos,'rows');
-                mag(ic) = [];
-                pos(ic,:) = [];
                 if self.killZero ==1
                     mag(round(pos(:,1),2) == 0 & round(pos(:,2),2) ==0) = 0;
                 end
@@ -284,6 +285,8 @@ classdef recip_2Dlattice < handle
                    pos0 = pos;
                    mag0 = mag;
                 end
+                mag = mag;%./cos(tilt);%%%%%%% applying cosine correction baked in
+                %before multiplying by conjugate -> cos^2
                 kz_holder = [kz_holder, pos(:,3)];
                 I = [I, mag.*conj(mag)];
             end
@@ -293,7 +296,7 @@ classdef recip_2Dlattice < handle
 
             phase = angle(mag0);%[phase,angle(mag)];
             rgb = phase2color(phase);
-            if(displaymode == 'angle')
+            if(strcmp('angle',displaymode))
                 f1 = figure;            
                 rgb = pos2color(pos0);
                 for i = 1:length(rgb)
@@ -301,7 +304,7 @@ classdef recip_2Dlattice < handle
                    hold on;
                 end
             
-            elseif(displaymode=='kz')
+            elseif(strcmp('kz',displaymode))
                 f2 =figure;
                 rgb = pos2color(pos0);
                 for i = 1:length(rgb)
