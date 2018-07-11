@@ -16,7 +16,9 @@ classdef graphene < recip_2Dlattice
         end
         
         function fg = fg_hk(self,h,k)
-            fg = 8*pi^2/self.area*exp(-1i*pi/3*(h+k)).*cos(pi/3*(h+k));
+            %fg = 8*pi^2/self.area*exp(-1i*pi/3*(h+k)).*cos(pi/3*(h+k));
+            fg = (1 + 1.*exp(-2i.*pi./3 .*(h+k)));
+           % fg = fg.*exp(-2i.*pi/3*(h+k));
         end
         
     end
