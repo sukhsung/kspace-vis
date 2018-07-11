@@ -77,6 +77,9 @@ classdef recip_2Dlattice < handle
         function setRotation(self,val)
             self.rotation = val;
         end
+        function setTiltVal(self,val)
+            self.tilt_val = val;
+        end
         
         function [pos,h,k] = recip2DMeshGrid(self)
             [pos,h,k] = indexedMeshGrid(self.spotcut,self.b1,self.b2);
@@ -165,6 +168,9 @@ classdef recip_2Dlattice < handle
             %rgb(:,85) = [141,141,141];
             scatter(pos(:,1),pos(:,2),2500*int,rgb,'.')
             axis equal
+            hold on;
+            tangent = tan(.5*pi+self.rotation);
+            plot( linspace(-1,1),linspace(-tangent,tangent));
             
             if isempty(self.title_str)
                 self.setTitle('')
@@ -263,9 +269,11 @@ classdef recip_2Dlattice < handle
             title(self.title_str)
         end
         
-        function [tiltrange, I, kz] = getTiltSeries(self, kzmode, displaymode)            
+        function [tiltrange, I, kz] = getTiltSeries(self, kzmode, displaymode, displaypattern, tiltrange)            
             self.setKzMode(['tilted_' kzmode]);
-            tiltrange = self.tilt_start:.1*pi/180:self.tilt_end;
+            if nargin < 5
+                tiltrange = self.tilt_start:.1*pi/180:self.tilt_end;
+            end
             I = [];
             kz_holder  = [];
             pos0 = [];
@@ -285,7 +293,7 @@ classdef recip_2Dlattice < handle
                    pos0 = pos;
                    mag0 = mag;
                 end
-                mag = mag;%./cos(tilt);%%%%%%% applying cosine correction baked in
+                mag = mag./(cos(tilt));%%%%%%% applying cosine correction baked in
                 %before multiplying by conjugate -> cos^2
                 kz_holder = [kz_holder, pos(:,3)];
                 I = [I, mag.*conj(mag)];
@@ -320,8 +328,9 @@ classdef recip_2Dlattice < handle
 
             %set(gca, 'ColorOrder', rgb,'NextPlot', 'replacechildren');
             %plot(tiltrange(:).*180/pi,(I(2,:)),'LineWidth', 3)
-
-            self.posmagDraw(pos0,mag0);
+            if displaypattern
+                self.posmagDraw(pos0,mag0);
+            end
         end
 
         function mag = applyScat(self,pos,mag,element)
@@ -333,6 +342,7 @@ classdef recip_2Dlattice < handle
             fe = eDiff_ScatteringFactor(element,r/(2*pi));
             mag = mag.*fe;
         end
+        
     end
     
     methods (Abstract)

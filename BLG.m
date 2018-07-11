@@ -35,7 +35,11 @@ classdef BLG < graphene
             self.theta=val;
         end 
         
-        function [pos, mag] = calculateABC(self)
+        function [pos, mag] = calculateABC(self,ILS,peak_no)
+            if nargin < 2
+               ILS = self.lambda;
+            end
+            
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
@@ -54,7 +58,7 @@ classdef BLG < graphene
             
             for i = 1:length(self.stacking)
                layer = self.stacking(i);
-               zfactor = exp(-1i.*self.lambda.*kz.*i);
+               zfactor = exp(-1i.*ILS.*kz.*i);
                if layer == 'A'
                    mag = mag + a0.*zfactor;
                elseif layer=='B'
@@ -66,7 +70,10 @@ classdef BLG < graphene
                end
             end
             
-            mag = s_g.*mag.*exp(1i.*self.lambda.*kz.*(1+length(self.stacking))./2);
+            mag = s_g.*mag.*exp(1i.*ILS.*kz.*(1+length(self.stacking))./2);
+            if nargin > 2
+               mag = mag(peak_no); 
+            end
 
         end
         
