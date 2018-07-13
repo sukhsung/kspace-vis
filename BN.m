@@ -25,7 +25,9 @@ classdef BN < recip_2Dlattice
             self.stacking=val;                
         end 
         function [pos,mag] = calculate(self)
-            if strcmp(self.stacking,'A')
+            if 1
+                [pos,mag] = self.calculateStacking;
+            elseif strcmp(self.stacking,'A')
 
                 [pos,mag] = self.calculateA;
             elseif strcmp(self.stacking,'AA-prime')
@@ -40,6 +42,66 @@ classdef BN < recip_2Dlattice
    
             self.setTitle([self.name,' ', self.stacking]) 
         end
+        
+        
+        function [mag] = N_layer(self,h,k,pos,kz)
+            mag = ones(size(h));
+            s_B = self.applyScat(pos,mag,5);
+            s_N = self.applyScat(pos,mag,7);
+            mag = s_B .* exp(-2i.*pi./3 .* (h+k))  + s_N ;
+        end
+        
+        function [mag] = B_layer(self,h,k,pos,kz)
+            mag = ones(size(h));
+            s_B = self.applyScat(pos,mag,5);
+            s_N = self.applyScat(pos,mag,7);
+            mag = s_B + s_N .* exp(-2i.*pi./3 .*(h+k));
+        end
+
+        function [mag] = b_layer(self,h,k,pos,kz)
+            mag = ones(size(h));
+            s_B = self.applyScat(pos,mag,5);
+            s_N = self.applyScat(pos,mag,7);
+            mag = s_B + s_N .* exp(-4i.*pi./3 .*(h+k)).*exp(1i.*kz.*1);
+        end
+        
+        function [mag] = n_layer(self,h,k,pos,kz)
+            mag = ones(size(h));
+            s_B = self.applyScat(pos,mag,5);
+            s_N = self.applyScat(pos,mag,7);
+            mag = s_B .* exp(-4i.*pi./3 .* (h+k)).*exp(-1i.*kz.*1)  + s_N ;
+        end
+        
+        function [pos,mag] = calculateStacking(self)
+            [pos,h,k] = recip2DMeshGrid(self);
+            [kz] = self.kzProvider(pos(:,1),pos(:,2));
+            pos(:,3) = kz;
+
+            mag = zeros(size(h));
+            for i = 1:length(self.stacking)
+               layer = self.stacking(i);
+               zfactor = exp(-1i.*self.lambda.*kz.*i);
+               if layer == 'B'
+                   mag = mag + self.B_layer(h,k,pos,kz).*zfactor;
+               elseif layer=='N'
+                   mag = mag+ self.N_layer(h,k,pos,kz).*zfactor;
+               elseif layer == 'b'
+                   mag = mag + self.b_layer(h,k,pos,kz).*zfactor;
+               elseif layer == 'n'
+                   mag = mag + self.n_layer(h,k,pos,kz).*zfactor;               
+               else
+                   display(['error at index' num2str(i)]);
+               end
+            end
+            
+            mag = mag.*exp(1i.*self.lambda.*kz.*(1+length(self.stacking))./2);
+
+            
+            
+            
+        end
+        
+        
         
         function [pos, mag] = calculateA(self)
             [pos,h,k] = recip2DMeshGrid(self);

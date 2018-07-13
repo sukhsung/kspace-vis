@@ -26,18 +26,18 @@ classdef TMD < recip_2Dlattice
             fg = 8*pi^2/self.area*exp(-1i*pi/3*(h+k)).*cos(pi/3*(h+k));
         end
         
-        function [pos,mag,h,k] = calculate(self)
+        function [pos,mag] = calculate(self)
             if self.stacking(length(self.stacking)) == 'H'
                 layers = str2num(self.stacking(1:length(self.stacking)-1));
                 if(layers == 1)
-                    [pos,mag,h,k] = self.calculate1H;
+                    [pos,mag] = self.calculate1H;
                 else
                     [pos, mag] = self.calculateNH(layers);
                 end
             elseif self.stacking(length(self.stacking)) == 'T'
                 layers = str2num(self.stacking(1:length(self.stacking)-1));
                 if(layers == 1)
-                    [pos,mag,h,k] = self.calculate1T;
+                    [pos,mag] = self.calculate1T;
                 else
                     [pos, mag] = self.calculateNT(layers);
                 end
@@ -57,7 +57,6 @@ classdef TMD < recip_2Dlattice
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
             mag = ones(length(pos),1);
-
             s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
             s_ch = self.applyScat(pos,mag,self.ch);
             s_ch = s_ch*2.*cos(kz*self.lambda_tmch).*exp(2i*pi/6*(h+k));
@@ -162,7 +161,7 @@ classdef TMD < recip_2Dlattice
         end
 
         %% specific stackings
-        function [pos,mag,h,k] = calculate1H(self)
+        function [pos,mag] = calculate1H(self)
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
@@ -171,13 +170,10 @@ classdef TMD < recip_2Dlattice
             s_ch = self.applyScat(pos,mag,self.ch);
             s_ch = s_ch*2.*cos(kz*self.lambda_tmch).*exp(-2i*pi/3*(h+k));
             mag = s_tm +s_ch;
-            mag = mag*(2*pi)^2; 
-           % mag = mag.*exp(-4i*pi/3*(h+k));
- 
-           % mag = mag;
+            mag = mag*(2*pi)^2;
         end
             
-        function [pos,mag,h,k] = calculate1T(self)
+        function [pos,mag] = calculate1T(self)
             [pos,h,k] = recip2DMeshGrid(self);
             [kz] = self.kzProvider(pos(:,1),pos(:,2));
             pos(:,3) = kz;
@@ -185,7 +181,6 @@ classdef TMD < recip_2Dlattice
             s_tm = self.applyScat(pos,mag,self.tm);
             s_ch = self.applyScat(pos,mag,self.ch);
             s_ch = s_ch*2.*cos(kz*self.lambda_tmch+2*pi/3*(h+k));
-           % s_ch = s_ch.*exp(-1i*pi*(h+k))*2.*cos(pi/3*(h+k)-kz*self.lambda_tmch);
             mag = s_tm +s_ch;
             mag = mag*(2*pi)^2;
         end

@@ -4,7 +4,6 @@ classdef recip_2Dlattice < handle
     %             eDiff_ScatteringFactor
     %             phase2color
     properties (SetAccess = private, GetAccess = public)
-        
         spotcut = 2;
         kzval = 0;
         keV = 80;
@@ -16,10 +15,6 @@ classdef recip_2Dlattice < handle
         b
         b1
         b2
-        a
-        a1
-        a2
-        area
         lambda
         title_str
         intensityFactor = 1;
@@ -57,9 +52,6 @@ classdef recip_2Dlattice < handle
         function setIncludeScat(self,val)
             self.includeScat=val;
         end 
-        function setArea(self,val)
-            self.area = val;
-        end
         function setB(self,val)
             self.b=val;
         end 
@@ -69,16 +61,6 @@ classdef recip_2Dlattice < handle
         function setB2(self,val)
             self.b2=val;
         end 
-        function setA(self,val)
-            self.a=val;
-        end 
-        function setA1(self,val)
-            self.a1=val;
-        end 
-        function setA2(self,val)
-            self.a2=val;
-        end 
-        
         function setLambda(self,val)
             self.lambda=val;
         end 
@@ -196,7 +178,7 @@ classdef recip_2Dlattice < handle
             title(self.title_str)
         end
 
-        function posmagDrawPhase(self,pos,mag,fig)
+        function posmagDrawPhase(self,pos,mag)
             % load global variables
             % handle empty variables
             % suppress zero beam
@@ -224,17 +206,15 @@ classdef recip_2Dlattice < handle
             int = self.intensityFactor .* sqrt(int);
 
             % Draw
-            if isempty(fig)
-                fig = figure;
-            end
-            ax = axes('Parent',fig);
-            hold(ax,'on')
+            figure
+            hold on
             scatter3(pos(:,1),pos(:,2),pos(:,3),700*int,rgb,'.')
+            axis equal
             
             if isempty(self.title_str)
                 self.setTitle('')
             end
-            title(ax,self.title_str)
+            title(self.title_str)
         end
         
         function draw(self)
@@ -247,40 +227,37 @@ classdef recip_2Dlattice < handle
         end
         
 
-        function [pos, mag] = draw3D(self,fig)
+        function [pos, mag] = draw3D(self)
             self.setKzMode('constant');
-            kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
-            
+            kzStep = 2^6;
             pos =[];    mag = [];
-            for kz = kzs
-                self.setKzVal(kz); 
+            for i = -kzStep:kzStep
+                self.setKzVal(pi/(kzStep/2)*2*i/self.lambda);
                 [pos_cur,mag_cur] = self.calculate;
                 pos = [pos;pos_cur];
                 mag = [mag;mag_cur];
             end
-            self.posmagDrawPhase(pos,mag,fig);
+            self.posmagDrawPhase(pos,mag);
             title(self.title_str)
-            axis equal
         end
         
-        function [pos, mag] = drawSideView(self,hs,ks,xpos,fig)
+        function [pos, mag] = drawSideView(self,hs,ks,xpos)
             self.setKzMode('constant')
-            self.setIntcut(0)
-            kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
+            kzs = linspace(-pi/self.lambda,pi/self.lambda,2^6);
             
             pos = []; mag = [];
             for kz = kzs
-                self.setKzVal(kz); 
+                %meaning:
+                self.setKzVal(kz); %-/+ kz step should be pi, total range should be ???
                 [pos_cur,mag_cur] = self.calculateHK(hs,ks);
                 pos_cur(:,1) = xpos;
-                pos_cur(:,2) = zeros(size(xpos));
+                pos_cur(:,2) = pos_cur(:,3);
                 pos = [pos;pos_cur];
                 mag = [mag;mag_cur];
             end
             
-            self.posmagDrawPhase(pos,mag,fig);
+            self.posmagDrawPhase(pos,mag);
             title(self.title_str)
-            view([0 0])
         end
         
         function [tiltrange, I, kz, f1] = getTiltSeries(self, kzmode, displaymode, displaypattern, tiltrange, fig)            

@@ -15,16 +15,12 @@ nc = @(n) repmat('C',1,n);
 %ACBACBACBACB
 %ABABABABABAB
 
-%m = BLG('ACACAC');%BN('AA-prime');%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
-%m = TaS2('1T')
-%m = BLG('ABCABCABC')
-%m.setkeV(80)
-%m = BLG('CC')
-%m = SLG;
-m = MoS2('1H');
-%m = BN('AA');
-% %% 3D View
-% % 
+
+%bnbb
+m = BLG(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
+
+%% 3D View
+
 %   m.setSpotcut(1);
 %  m.setKillZero(2);
 % m.setIntensityFactor(7);%3);
@@ -44,7 +40,7 @@ m = MoS2('1H');
 % kz0 = sortrows(kz0,4);
 % kz0 = [kz0; kz0(1,:)]; %completing hexagon (wrap back to first point)
 % if(1)
-%     plot3(kz0(:,1),kz0(:,2),kz0(:,3),'k');
+%     plot3(kz0(:,1),kz0(:,2),kz0(:,3));
 % end
 % set(gca,'YTickLabel',[])
 % set(gca,'XTickLabel',[])
@@ -53,14 +49,13 @@ m = MoS2('1H');
 % set(gca,'XTick',[])
 % set(gca,'ZTick',[])
 % 
-%  view(-165, 34)
-%  axis off
-% return
-% %% Cross Sectional
-% % % 
+% view(-165, 34)
+
+%% Cross Sectional
+% 
 % m.setSpotcut(2);
 % m.setKillZero(2);
-% m.setIntensityFactor(13);%4);
+% m.setIntensityFactor(6);%4);
 % m.setIntcut(.0001);
 % angle = 30;
 % [pos, mag] = m.drawCrossSection(angle);
@@ -70,30 +65,19 @@ m = MoS2('1H');
 % set(gca,'ZTick',[])
 % 
 % view(angle,0)
-% title(' ')
-% axis off
 
 %% Tilt Pattern
  %Duplicates?????
 
-tmch = 1.535;
-m.setLambda_tmch( tmch); %1.506 orig N.S. from arizona cryst. db       % 3.241/2);        %Need to be confirmed
-
-
-
-m.setSpotcut(2);
+m.setkeV(200);
+m.setSpotcut(1);
 m.setKillZero(1);
 m.setIntensityFactor(1);
-m.setTiltStart(-30*pi/180);
-m.setTiltEnd(30*pi/180);
-m.setRotation(15*pi/180);
-
-[tiltrange, I] = m.getTiltSeries('ewald','angle');
-figure(1)
-axis on
-%pbaspect([1 0.35 0.35])
-%set(gca,'YTickLabel',[])
-%set(gca,'XTickLabel',[])
+m.setTiltStart(-25*pi/180);
+m.setTiltEnd(25*pi/180);
+m.setRotation(60*pi/180);
+%ewald or constant, kz or angle
+[tiltrange, I] = m.getTiltSeries('ewald','angle',true,[]);
 
 
 
