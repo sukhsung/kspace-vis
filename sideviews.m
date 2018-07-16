@@ -9,9 +9,10 @@ xpos = (-2:2)';
    
 fig = figure;%('visible','off');
 fig.Units='inches';
-fig.Position=[0,0,10,3.5];
+%fig.Position=[0,0,10,3.5];
 
-g = graphene('AB');
+%g = graphene('B');
+g = MoS2('2H');
 g.setKillZero(2);
 g.drawSideView(hks(:,1),hks(:,2),xpos,fig);
 
@@ -24,4 +25,4 @@ title(ax,'');
 % ax.ZAxis.TickLabels = [];
 axis(ax,'off')
 ti = ax.TightInset;
-ax.Position=[ti(1) ti(2) 0.999-ti(3)-ti(1) 1-ti(4)-ti(2)];
+%ax.Position=[ti(1) ti(2) 0.97-ti(3)-ti(1) 0.95-ti(4)-ti(2)];

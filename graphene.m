@@ -116,5 +116,10 @@ classdef graphene < recip_2Dlattice
                 mag = self.applyScat(pos,mag,6);
             end                
         end
+        
+        function [pos,mag] = calculateReal(self)
+            
+            
+        end
     end
 end

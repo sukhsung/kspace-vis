@@ -25,8 +25,8 @@ classdef recip_2Dlattice < handle
         intensityFactor = 1;
         tilt_start
         tilt_end
-        tilt_val
-        rotation
+        tilt_angle
+        tilt_axis = 0;
     end
         
     methods   
@@ -92,11 +92,11 @@ classdef recip_2Dlattice < handle
         function setTiltEnd(self,val)
             self.tilt_end = val;
         end
-        function setRotation(self,val)
-            self.rotation = val;
+        function setTiltAxis(self,val)
+            self.tilt_axis = val;
         end
-        function setTiltVal(self,val)
-            self.tilt_val = val;
+        function setTiltAngle(self,val)
+            self.tilt_angle = val;
         end
         
         function [pos,h,k] = recip2DMeshGrid(self)
@@ -118,16 +118,16 @@ classdef recip_2Dlattice < handle
                     kz = K-sqrt(K^2 -k_rho_sq);
                 case 'tilted_ewald'
                     k = eDiff_Wavenumber(self.keV);
-                    phi = self.tilt_val;
-                    theta = self.rotation;
+                    phi = self.tilt_angle;
+                    theta = self.tilt_axis;
                     qzo = k*cos(phi);
                     qxo = k*sin(phi)*cos(theta);
                     qyo = k*sin(phi)*sin(theta);
                     kz = qzo - sqrt(k^2 - (kx-qxo).^2 - (ky-qyo).^2);
                 case 'tilted_constant'
                     k = eDiff_Wavenumber(self.keV);
-                    phi = self.tilt_val;
-                    theta = self.rotation;
+                    phi = self.tilt_angle;
+                    theta = self.tilt_axis;
                     k_rho = sqrt(kx.^2+ky.^2);
                     kz = k_rho.*tan(phi);%k.*cos(phi)-sqrt(k.^2 - k_rho.^2)
                 otherwise
@@ -141,7 +141,7 @@ classdef recip_2Dlattice < handle
         % Written by Suk Hyun Sung, sukhsung@umich.edu
         % Jan. 05 2018
 
-            % construct rotation matrix
+            % construct tilt_axis matrix
             rotmatrix = [cos(theta),-sin(theta);sin(theta),cos(theta)];
 
             % extract xy coordinates only
@@ -152,7 +152,7 @@ classdef recip_2Dlattice < handle
             pos(:,1:2) = xy_rot;
         end
         
-        function posmagDraw(self,pos,mag)
+        function drawTiltAxis(self,pos,mag,fig)
             % load global variables
             % handle empty variables
             % suppress zero beam
@@ -161,34 +161,21 @@ classdef recip_2Dlattice < handle
             end
             % calculate intensity and normalize
             int = mag.*conj(mag);
-            int = int/max(int).*1000;
+            int = int/max(int);
 
             % remove intensities below cutoff
             pos(int<=self.intcut,:) =[];
-            mag(int<=self.intcut,:) = [];
-            int(int<=self.intcut) = [];
-
-            % scatter point area is proportional to int
-            int = self.intensityFactor .* sqrt(int);
-            
-            
-            %my colors
-            phase = angle(mag);
-            rgb = phase2color(phase);
+            int(int<=self.intcut,:) =[];
             
             rgb = pos2color(pos);
-
-
+            
             % Draw
-            figure
-            hold on
-            %rgb = zeros(3,length(rgb));
-            %rgb(:,85) = [141,141,141];
-            scatter(pos(:,1),pos(:,2),2500*int,rgb,'.')
-            axis equal
-            hold on;
-            tangent = tan(.5*pi+self.rotation);
-            plot( linspace(-1,1),linspace(-tangent,tangent));
+            ax = axes('Parent',fig);
+            hold(ax,'on')
+            axis(ax,'equal')
+            scatter(pos(:,1),pos(:,2),1000*int,rgb,'.')
+            phi = self.tilt_axis;
+            plot( self.b*linspace(-cos(phi),cos(phi)),self.b*linspace(-sin(phi),sin(phi)));
             
             if isempty(self.title_str)
                 self.setTitle('')
@@ -224,9 +211,6 @@ classdef recip_2Dlattice < handle
             int = self.intensityFactor .* sqrt(int);
 
             % Draw
-            if isempty(fig)
-                fig = figure;
-            end
             ax = axes('Parent',fig);
             hold(ax,'on')
             scatter3(pos(:,1),pos(:,2),pos(:,3),700*int,rgb,'.')
@@ -237,18 +221,18 @@ classdef recip_2Dlattice < handle
             title(ax,self.title_str)
         end
         
-        function draw(self)
+        function [pos, mag] = draw2D(self,fig)
             [pos,mag] = self.calculate();
-            self.posmagDraw(pos,mag);
+            self.posmagDrawPhase(pos,mag,fig);
             if isempty(self.title_str)
                 self.setTitle('')
             end
             title(self.title_str)
         end
-        
 
         function [pos, mag] = draw3D(self,fig)
             self.setKzMode('constant');
+            self.intensityFactor = 5;
             kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
             
             pos =[];    mag = [];
@@ -266,7 +250,9 @@ classdef recip_2Dlattice < handle
         function [pos, mag] = drawSideView(self,hs,ks,xpos,fig)
             self.setKzMode('constant')
             self.setIntcut(0)
+            self.intensityFactor = 30;
             kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
+            %kzs = linspace(-2*pi/self.lambda_tmch,2*pi/self.lambda_tmch,2^8);
             
             pos = []; mag = [];
             for kz = kzs
@@ -296,7 +282,7 @@ classdef recip_2Dlattice < handle
             mag0 = [];
             %rgb = [];
             for tilt = tiltrange
-                self.tilt_val = tilt;
+                self.tilt_angle = tilt;
                 [pos, mag] = self.calculate;
                 if self.killZero ==1
                     mag(round(pos(:,1),2) == 0 & round(pos(:,2),2) ==0) = 0;
@@ -366,6 +352,7 @@ classdef recip_2Dlattice < handle
     
     methods (Abstract)
         [pos,mag] = calculate(self);
+      %  [pos,mag] = calculateReal(self);
         mag = calculateHK(self,h,k);
     end
 end
