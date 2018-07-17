@@ -17,7 +17,7 @@ nc = @(n) repmat('C',1,n);
 
 
 %bnbb
-m = BLG(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
+m = graphene(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
 
 %% 3D View
 
@@ -75,9 +75,9 @@ m.setKillZero(1);
 m.setIntensityFactor(1);
 m.setTiltStart(-25*pi/180);
 m.setTiltEnd(25*pi/180);
-m.setRotation(60*pi/180);
+m.setTiltAxis(60*pi/180);
 %ewald or constant, kz or angle
-[tiltrange, I] = m.getTiltSeries('ewald','angle',true,[]);
+[tiltrange, I] = m.getTiltSeries('constant','angle',true,[]);
 
 
 

@@ -9,10 +9,10 @@ xpos = (-2:2)';
    
 fig = figure;%('visible','off');
 fig.Units='inches';
-%fig.Position=[0,0,10,3.5];
+fig.Position=[0,0,10,3.5];
 
-%g = graphene('B');
-g = MoS2('2H');
+g = graphene('ACAC');
+%g = MoS2('2H');
 g.setKillZero(2);
 g.drawSideView(hks(:,1),hks(:,2),xpos,fig);
 

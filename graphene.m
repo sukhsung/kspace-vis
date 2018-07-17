@@ -5,6 +5,7 @@ classdef graphene < recip_2Dlattice
         stacking
     end
     
+    
     methods
         function obj = graphene(varargin)
             obj.setLambda(3.346);
@@ -56,7 +57,8 @@ classdef graphene < recip_2Dlattice
             pos(:,3) = kz;
             
             mag = zeros(length(pos),1);
-
+            
+            
             a0 = self.fg_hk(hs,ks);
             b0 = self.fg_hk(hs,ks).*exp(-2i*pi/3*(hs+ks));
             c0 = self.fg_hk(hs,ks).*exp(-4i*pi/3*(hs+ks));            

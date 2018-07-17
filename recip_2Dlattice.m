@@ -232,7 +232,9 @@ classdef recip_2Dlattice < handle
 
         function [pos, mag] = draw3D(self,fig)
             self.setKzMode('constant');
-            self.intensityFactor = 5;
+            self.setSpotcut(1);
+            self.setKillZero(2);
+            self.intensityFactor = 10;
             kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
             
             pos =[];    mag = [];
@@ -243,8 +245,16 @@ classdef recip_2Dlattice < handle
                 mag = [mag;mag_cur];
             end
             self.posmagDrawPhase(pos,mag,fig);
+            hold on
+            
+            ang = linspace(30, 390,7);
+            x   = self.b* cosd(ang); y = self.b*sind(ang);
+            plot(x,y,'k')
+            
+            
             title(self.title_str)
-            axis equal
+            axis equal off
+            view([17,36])
         end
         
         function [pos, mag] = drawSideView(self,hs,ks,xpos,fig)
