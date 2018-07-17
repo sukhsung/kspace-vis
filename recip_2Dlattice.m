@@ -232,8 +232,11 @@ classdef recip_2Dlattice < handle
 
         function [pos, mag] = draw3D(self,fig)
             self.setKzMode('constant');
+<<<<<<< HEAD
             self.setSpotcut(1);
             self.setKillZero(2);
+=======
+>>>>>>> a2a39cc88883145a247ce0683102c084fbec31a6
             self.intensityFactor = 10;
             kzs = linspace(-2*pi/self.lambda,2*pi/self.lambda,2^8);
             
