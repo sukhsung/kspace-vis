@@ -27,6 +27,10 @@ classdef TMD < recip_2Dlattice
         end
         
         function [pos,mag] = calculate(self)
+            if self.stacking(1) == 'e'
+                [pos,mag] = self.calculateExact;
+                return;
+            end
             if self.stacking(length(self.stacking)) == 'H'
                 layers = str2num(self.stacking(1:length(self.stacking)-1));
                 if(layers == 1)
@@ -50,6 +54,128 @@ classdef TMD < recip_2Dlattice
                 end
             end
             self.setTitle([self.name,' ', self.stacking]) 
+        end
+        
+        function [pos,mag] = calculateExact(self)
+            ils = 6.1475;%6.1475;
+            ics = 3.07/2;
+            if 0
+                %2H(b)x2/3 
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                l1 = s_tm + s_ch;
+                l2 = (s_tm + s_ch.*exp(-2i*pi*2/3*(h+k))).*exp(1i*kz*ils).*exp(2i*pi*1/3*(h+k));
+                l3 = (s_tm + s_ch).*exp(2i*kz*ils);
+                mag = l1+l2+l3;                
+            elseif 0
+                %2H(a)x2/3 
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                l1 = s_tm + s_ch;
+                l2 = (s_tm + s_ch.*exp(-2i*pi*2/3*(h+k))).*exp(1i*kz*ils);
+                l3 = (s_tm + s_ch).*exp(2i*kz*ils);
+                mag = l1+l2+l3;                
+            elseif 1
+                %6R
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                s_ch_t = s_ch*2.*cos(kz*self.lambda_tmch+2*pi/3*(h+k)).*exp(-2i*pi/6*(h+k));
+                l1 = s_tm + s_ch;
+                l2 = (s_tm + s_ch_t).*exp(2i*pi*1/3*(h+k)).*exp(1i*kz*ils);
+                l3 = (s_tm + s_ch).*exp(2i*pi*2/3*(h+k)).*exp(2i*kz*ils);
+                mag = l1+l2+l3;               
+                
+                
+            elseif 0
+                %4H(a)
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                l1 = s_tm + s_ch;
+                l2 = (s_tm + s_ch).*exp(2i*pi*1/3*(h+k)).*exp(1i*kz*ils);
+                l3 = (s_tm + s_ch.*exp(-2i*pi*2/3*(h+k))).*exp(2i*pi*1/3*(h+k)).*exp(2i*kz*ils);
+                mag = l1+l2+l3;                
+            elseif 0
+                %3R
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                l1 = s_tm + s_ch;
+                l2 = (s_tm + s_ch).*exp(2i*pi*2/3*(h+k)).*exp(1i*kz*ils);
+                l3 = (s_tm + s_ch).*exp(2i*pi*1/3*(h+k)).*exp(2i*kz*ils);
+                mag = l1+l2+l3;
+            elseif 1
+                % a mess
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                mag = s_tm +s_ch+(s_tm+s_ch).*exp(1i*kz*ils).*exp(-2i*pi/2.6*(h+k)) + (s_tm+s_ch).*exp(2i*kz*ils).*exp(-2i*pi/2.6*(h+k));%.*exp(-2i*pi/3*(h+k))
+                mag = mag*(2*pi)^2;                    
+            elseif 0
+            % mntn (nonexistant)
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                mag = s_tm +s_ch+(s_tm+s_ch).*exp(1i*kz*ils);%.*exp(-2i*pi/3*(h+k))
+                mag = mag*(2*pi)^2;    
+            elseif 0
+            %Butterfly (
+                bfact = 3;
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(-2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(2i*pi/6*(h+k));
+                mag = s_tm +s_ch+(s_tm+s_ch.*exp(-2i*pi/bfact*(h+k))).*exp(1i*kz*ils);%
+                mag = mag*(2*pi)^2;        
+                self.setTitle([num2str(bfact)])
+            else
+            %teeth
+                bfact =2.6;%2.5;
+                [pos,h,k] = recip2DMeshGrid(self);
+                [kz] = self.kzProvider(pos(:,1),pos(:,2));
+                pos(:,3) = kz;
+                mag = ones(length(pos),1);
+                s_tm = self.applyScat(pos,mag,self.tm) .* exp(+2i.*pi./6 .*(h+k));
+                s_ch = self.applyScat(pos,mag,self.ch);
+                s_ch = s_ch*2.*cos(kz*ics).*exp(-2i*pi/6*(h+k));
+                mag = s_tm +s_ch+(s_tm+s_ch).*exp(1i*kz*ils).*exp(+2i*pi/bfact*(h+k));%
+                mag = mag*(2*pi)^2;
+                self.setTitle([num2str(bfact)])
+            end
         end
         %% arbitrary 2H (AB, MoS2 style) stackings
         function [pos,mag] = stacking_1H(self)
@@ -171,6 +297,7 @@ classdef TMD < recip_2Dlattice
             s_ch = s_ch*2.*cos(kz*self.lambda_tmch).*exp(-2i*pi/3*(h+k));
             mag = s_tm +s_ch;
             mag = mag*(2*pi)^2;
+            %mag = s_tm+s_ch.*exp(-2i*pi*1/3*(h+k)).*exp(-1i.*kz.*self.lambda_tmch)+s_ch.*exp(-2i*pi*1/3*(h+k)).*exp(1i.*kz.*self.lambda_tmch);
         end
             
         function [pos,mag] = calculate1T(self)

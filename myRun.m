@@ -17,11 +17,11 @@ nc = @(n) repmat('C',1,n);
 
 
 %bnbb
-m = BLG(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
+m = BLG(['BA']);%TprimeMoS2();%BLG(['ABABABABABABABA']);%MoS2('5H');%BLG(['AAAAAAAAAA']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
 
 %% 3D View
 
-%   m.setSpotcut(1);
+%   m.setSpotcut(2);
 %  m.setKillZero(2);
 % m.setIntensityFactor(7);%3);
 % m.setIntcut(.0001);
@@ -31,8 +31,8 @@ m = BLG(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
 % %drawing hexagon around first order peaks
 % colormap(gray)
 % bound = 3;
-% xlim([-bound bound])
-% ylim([-bound bound])
+% %xlim([-bound bound])
+% %ylim([-bound bound])
 % %drawing hexagon at kz = 0
 % kz0 = pos(pos(:,3)==0 & pos(:,2) < bound & pos(:,2) > -bound & pos(:,1) < bound & pos(:,1) > -bound & ~( pos(:,1) ==0 & pos(:,2)==0  ),:);
 % phase = atan2(kz0(:,2),kz0(:,1))*180/pi;
@@ -70,14 +70,14 @@ m = BLG(['ABABAB']);%BLG(['ACBACBACBACB']);%TaSe2('2H'); %BN('AB');%TaSe2('1H');
  %Duplicates?????
 
 m.setkeV(200);
-m.setSpotcut(1);
+m.setSpotcut(2);
 m.setKillZero(1);
 m.setIntensityFactor(1);
-m.setTiltStart(-30*pi/180);
-m.setTiltEnd(30*pi/180);
+m.setTiltStart(-15*pi/180);
+m.setTiltEnd(15*pi/180);
 m.setRotation(90*pi/180);
 %ewald or constant, kz or angle
-[tiltrange, I] = m.getTiltSeries('ewald','angle');
+[tiltrange, I] = m.getTiltSeries('ewald','angle',0);
 
 
 

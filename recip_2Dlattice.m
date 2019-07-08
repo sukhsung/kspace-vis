@@ -101,6 +101,7 @@ classdef recip_2Dlattice < handle
                 case 'tilted_ewald'
                     k = eDiff_Wavenumber(self.keV);
                     phi = self.tilt_val;
+                    %phi2 = 5;
                     theta = self.rotation;
                     qzo = k*cos(phi);
                     qxo = k*sin(phi)*cos(theta);
