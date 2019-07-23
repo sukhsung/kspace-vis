@@ -30,7 +30,7 @@ classdef recip_2Dlattice < handle
         % For Tilt Series
         tilt_start
         tilt_end
-        tilt_n
+        tilt_n = 2.^8;
         tilt_angle
         tilt_axis = 0;
         
