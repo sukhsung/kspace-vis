@@ -34,6 +34,7 @@ function [varargout] = indexedMeshGrid(varargin)
     
     [h,k,l] = ndgrid(-spotcut:spotcut,-spotcut:spotcut,-spotcut:spotcut);
     cutoff = sqrt(dot(a1,a1))*spotcut*1.1;    %k space cutoff
+    %cutoff = sqrt(dot(a1,a1))*sqrt(3)*1.1;    %k space cutoff
 
     h = reshape(h,[numel(h),1]);
     k = reshape(k,[numel(k),1]);
