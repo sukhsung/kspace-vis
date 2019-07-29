@@ -1,6 +1,6 @@
 classdef TMD < recip_2Dlattice
     %TMDS
-    properties (SetAccess = private, GetAccess = public)
+    properties (SetAccess = public, GetAccess = public)
         tm
         ch
         lambda_tmch

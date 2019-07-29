@@ -4,7 +4,7 @@ close all
 
 %% Test Graphene
 
-m = graphene('uTBG');
+m = graphene('AC');
 m.rnd = 2;
 m.setTheta(0)
 
@@ -23,7 +23,7 @@ t_max= 23;
 m.setTiltStart(-t_max*pi/180);
 m.setTiltEnd(t_max*pi/180);
 m.setTiltN(1024);
-m.setTiltAxis(30);
+m.setTiltAxis(deg2rad(0));
 
 %displaymode = 'kz';
 displaymode = 'angle';
@@ -59,10 +59,10 @@ t_max= 23;
 m.setTiltStart(-t_max*pi/180);
 m.setTiltEnd(t_max*pi/180);
 m.setTiltN(1024);
-m.setTiltAxis(30);
+m.setTiltAxis(deg2rad(0));
 
 %displaymode = 'kz';
-displaymode = 'angle';
+displaymode = 'kz';
 displaypattern = true;
 kzmode = 'ewald';
 %kzmode = 'constant';
@@ -70,8 +70,8 @@ kzmode = 'ewald';
 
 % Test Side view
 m.setKillZero(2);
-hs = [-1 0 1]';
-ks = [ 0 0 0]';
-xpos = [-1 0 1]';
+hs = [-1 0 1 2]';
+ks = [ 0 0 0 0]';
+xpos = [-1 0 1 1.5]';
 
 m.drawSideView(hs,ks,xpos,figure)
