@@ -1,4 +1,4 @@
-classdef graphene < recip_2Dlattice
+classdef graphene < recipHexLattice
 
     properties (SetAccess = private, GetAccess = public)
         theta = deg2rad(5);
@@ -11,12 +11,9 @@ classdef graphene < recip_2Dlattice
         % stacking should be string comprised of 'A', 'B' or 'C' 
         % or 'uTBG' (unrelaxed TBG) with second argument for twist angle
         function obj = graphene(stacking)
+            
+            obj = obj@recipHexLattice( 2.467 );
             obj.setLambda(3.346);
-            obj.setA(2.467);
-            obj.setB1(2 * pi/(sqrt(3)*obj.a) * [sqrt(3); -1]);
-            obj.setB2(4 * pi/(sqrt(3)*obj.a) * [0; 1]);
-            obj.setB(sqrt(dot(obj.b1,obj.b1)));              %in rad/Ang
-            obj.setArea(sqrt(3)*obj.a^2/2); 
             obj.setKzExtent(2*pi/obj.lambda);
             if nargin == 0
                 obj.setStacking('C')

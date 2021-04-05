@@ -14,10 +14,10 @@ classdef recip_2Dlattice < handle
         includeScat= true;
         
         % Lattice Parameters
-        b
+        bs
         b1
         b2
-        a
+        as
         a1
         a2
         area              % Unit Cell Area
@@ -69,24 +69,6 @@ classdef recip_2Dlattice < handle
         function setArea(self,val)
             self.area = val;
         end
-        function setB(self,val)
-            self.b=val;
-        end 
-        function setB1(self,val)
-            self.b1=val;
-        end 
-        function setB2(self,val)
-            self.b2=val;
-        end 
-        function setA(self,val)
-            self.a=val;
-        end 
-        function setA1(self,val)
-            self.a1=val;
-        end 
-        function setA2(self,val)
-            self.a2=val;
-        end 
         function setKzExtent(self,val)
             self.kzExtent = val;
         end
@@ -201,7 +183,7 @@ classdef recip_2Dlattice < handle
         end
         
         % Draw full 3D recip structure
-        function [pos, mag] = draw3D(self,drawHexagon,fig)
+        function [pos, mag] = draw3D(self,drawUnitCell,fig)
             figure(fig);
             
             self.setKzMode('constant');
@@ -219,11 +201,10 @@ classdef recip_2Dlattice < handle
             end
             self.posmagDrawPhase(pos,mag,fig);
             
-            if drawHexagon
+            if drawUnitCell
                 % Draw a hexagon around first order Bragg peak
                 hold on
-                ang = linspace(30, 390,7);
-                x   = self.b* cosd(ang); y = self.b*sind(ang);
+                [x, y] = self.unitCellOutline();
                 plot(x,y,'k')
             end
             
@@ -286,7 +267,7 @@ classdef recip_2Dlattice < handle
             axis(ax,'equal')
             scatter(pos(:,1),pos(:,2),1000*int,rgb,'.')
             phi = self.tilt_axis;
-            plot( self.b*linspace(-cos(phi),cos(phi)),self.b*linspace(-sin(phi),sin(phi)));
+            plot( self.bs(1)*linspace(-cos(phi),cos(phi)),self.bs(1)*linspace(-sin(phi),sin(phi)));
             
             if isempty(self.title_str)
                 self.setTitle('')
@@ -369,6 +350,7 @@ classdef recip_2Dlattice < handle
     methods (Abstract)
         [pos,mag] = calculate(self);
         mag = calculateHK(self,h,k);
+        [x, y] = unitCellOutline(self);
     end
 end
 

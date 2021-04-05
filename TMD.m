@@ -1,4 +1,4 @@
-classdef TMD < recip_2Dlattice
+classdef TMD < recipHexLattice
     %TMDS
     properties (SetAccess = public, GetAccess = public)
         tm
@@ -10,12 +10,7 @@ classdef TMD < recip_2Dlattice
     
     methods        
         function obj = TMD(a)
-            obj = obj@recip_2Dlattice;
-            obj.setA(a)
-            obj.setB1(2 * pi/(sqrt(3)*obj.a) * [sqrt(3); -1]);
-            obj.setB2(4 * pi/(sqrt(3)*obj.a) * [0; 1]);
-            obj.setB(sqrt(dot(obj.b1,obj.b1)));              %in rad/Ang
-            obj.setArea(sqrt(3)*obj.a^2/2);   
+            obj = obj@recipHexLattice(a);
         end
         
         
