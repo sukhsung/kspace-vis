@@ -5,7 +5,7 @@ close all
 %% Test CrSBr
 
 m = CrSBr();
-m.numLayer=2;
+m.numLayer=1;
 
 m.setTitle('');
 m.setKzExtent( 4*pi/m.lambda )
@@ -14,6 +14,7 @@ m.setSpotcut(2);
 % Test draw3D
 drawRect = true;
 m.draw3D(drawRect,figure);
+view([25, 32])
 
 %% Test Tilt Pattern
 m.setkeV(200);
@@ -35,8 +36,8 @@ kzmode = 'ewald';
 %%
 % Test Side view
 m.setKillZero(2);
-hs = [-1 0 1]';
-ks = [ 0 0 0]';
-xpos = [-1 0 1]';
+hs = [2 1 0 0 0 1]';
+ks = [0 0 0 1 2 1]';
+xpos = [-2 -1 0 1 2 3 ]';
 
 m.drawSideView(hs,ks,xpos,figure)

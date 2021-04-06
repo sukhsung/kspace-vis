@@ -11,11 +11,11 @@ classdef MoS2 < TMD
             obj.setLambda_tmch( 3.07/2); %N.S. from arizona cryst. db       % 3.241/2);        %Need to be confirmed
             if isempty(varargin)
                 obj.setStacking('1H')
-                obj.setKzExtent(pi/obj.lambda_tmch)
+                obj.setKzExtent(2*pi/obj.lambda_tmch)
             else
                 obj.setStacking(varargin{1})
                 if strcmp(varargin{1},'1T') || strcmp(varargin{1},'1H')
-                    obj.setKzExtent(pi/obj.lambda_tmch)
+                    obj.setKzExtent(2*pi/obj.lambda_tmch)
                 else
                     obj.setKzExtent(4*pi/obj.lambda);
                 end
