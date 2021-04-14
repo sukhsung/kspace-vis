@@ -10,8 +10,8 @@ m.numLayer=1;
 m.setTitle('');
 m.setKzExtent( 4*pi/m.lambda )
 
-m.setSpotcut(2);
-% Test draw3D
+m.setSpotcut(3);
+%% Test draw3D
 drawRect = true;
 m.draw3D(drawRect,figure);
 view([25, 32])
@@ -31,7 +31,9 @@ displaymode = 'angle';
 displaypattern = true;
 kzmode = 'ewald';
 %kzmode = 'constant';
-[tiltrange, I] = m.getTiltSeries(kzmode, displaymode, displaypattern, figure);
+hs = [2  2 0 -2 -2 2 -2]';
+ks = [2 -2 0  2 -2 0  0]';
+[tiltrange, I] = m.getTiltSeriesHK(hs,ks, kzmode,displaymode, displaypattern, figure);
 
 %%
 % Test Side view
