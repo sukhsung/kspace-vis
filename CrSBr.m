@@ -36,14 +36,20 @@ classdef CrSBr < recipRectLattice
 %             
 %             magBr = exp(-2i*pi*( 0.25*hs + 0.25*ks) + 1i*0.35*self.lambda*kz)...;
 %                   + exp(-2i*pi*(-0.25*hs - 0.25*ks) - 1i*0.35*self.lambda*kz);
-            magCr = exp( -1i* (pi/2*( hs - ks) + 0.13*self.lambda*kz) )...;
-                  + exp( -1i* (pi/2*(-hs + ks) - 0.13*self.lambda*kz) );
+%             magCr = exp( -1i* (pi/2*( hs - ks) + 0.13*self.lambda*kz) )...;
+%                   + exp( -1i* (pi/2*(-hs + ks) - 0.13*self.lambda*kz) );
+%             
+%             magS = exp( -1i* (pi/2*( hs + ks) - 0.08*self.lambda*kz) )...;
+%                  + exp( -1i* (pi/2*(-hs - ks) + 0.08*self.lambda*kz) );
+%             
+%             magBr = exp( -1i* (pi/2*( hs + ks) + 0.35*self.lambda*kz) )...;
+%                   + exp( -1i* (pi/2*(-hs - ks) - 0.35*self.lambda*kz) );
+              
+            magCr = cos( (pi/2*( hs - ks) + 0.13*self.lambda*kz) );
             
-            magS = exp( -1i* (pi/2*( hs + ks) - 0.08*self.lambda*kz) )...;
-                 + exp( -1i* (pi/2*(-hs - ks) + 0.08*self.lambda*kz) );
+            magS = cos( (pi/2*( hs + ks) - 0.08*self.lambda*kz) );
             
-            magBr = exp( -1i* (pi/2*( hs + ks) + 0.35*self.lambda*kz) )...;
-                  + exp( -1i* (pi/2*(-hs - ks) - 0.35*self.lambda*kz) );
+            magBr = cos( (pi/2*( hs + ks) + 0.35*self.lambda*kz) );
 
             
             magCr = self.applyScat(pos,magCr,self.Cr);

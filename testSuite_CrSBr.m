@@ -20,11 +20,11 @@ view([25, 32])
 m.setkeV(200);
 m.setKillZero(1);
 m.setIntensityFactor(1);
-t_max= 23;
+t_max= 30;
 m.setTiltStart(-t_max*pi/180);
 m.setTiltEnd(t_max*pi/180);
 m.setTiltN(1024);
-m.setTiltAxis(deg2rad(0));
+m.setTiltAxis(deg2rad(90));
 
 %displaymode = 'kz';
 displaymode = 'angle';
