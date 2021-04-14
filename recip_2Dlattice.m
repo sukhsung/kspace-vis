@@ -267,7 +267,7 @@ classdef recip_2Dlattice < handle
             axis(ax,'equal')
             scatter(pos(:,1),pos(:,2),1000*int,rgb,'.')
             phi = self.tilt_axis;
-            plot( self.bs(1)*linspace(-cos(phi),cos(phi)),self.bs(1)*linspace(-sin(phi),sin(phi)));
+            plot( self.bs(1)*linspace(-sin(phi),sin(phi)),self.bs(1)*linspace(-cos(phi),cos(phi)));
             
             if isempty(self.title_str)
                 self.setTitle('')
@@ -293,6 +293,65 @@ classdef recip_2Dlattice < handle
             for tilt = tiltrange
                 self.tilt_angle = tilt;
                 [pos, mag] = self.calculate;
+                if self.killZero ==1
+                    mag(round(pos(:,1),2) == 0 & round(pos(:,2),2) ==0) = 0;
+                end
+                int = mag.*conj(mag);
+                int = int./max(int);
+                pos(int<=self.intcut,:) =[];
+                mag(int<=self.intcut,:) = [];
+                %%%%%%% applying cosine correction baked in
+                mag = mag./(cos(tilt)); %before multiplying by conjugate -> cos^2
+                kz_holder = [kz_holder, pos(:,3)];
+                I = [I, mag.*conj(mag)];
+            end
+            I = I./max(I(:));
+            
+            pos0 = pos;
+            mag0 = ones(size(pos0));            
+            rgb = pos2color(pos0);
+            if(strcmp('angle',displaymode))
+                for i = length(rgb):-1:1
+                   plot(tiltrange(:).*180/pi, I(i,:),'LineWidth',2,'Color',rgb(i,:));
+                end            
+            elseif(strcmp('kz',displaymode))
+                for i = 1:length(rgb)
+                   plot(kz_holder(i,:), I(i,:),'LineWidth',2,'Color',rgb(i,:));
+                end
+            else
+                error('Incorrect Display Mode');
+            end
+            
+            if isempty(self.title_str)
+                self.setTitle('')
+            end
+            title(self.title_str)
+
+            if displaypattern
+                self.drawTiltAxis(pos0,mag0,figure);
+            end
+            
+            self.setkeV(curkeV);
+        end
+        
+        function [tiltrange, I] = getTiltSeriesHK(self, hs,ks,kzmode, displaymode, displaypattern, fig)    
+            figure(fig);
+            hold on;
+            
+            curkeV = self.keV;            
+            self.setKzMode('tilted_ewald');
+            if strcmp(kzmode, 'constant')
+                % Set arbitrary high beam energy to simulate flat ewald
+                self.setkeV(10^8);
+            end
+            
+            tiltrange = linspace(self.tilt_start,self.tilt_end,self.tilt_n);
+            
+            I           = [];
+            kz_holder   = [];
+            for tilt = tiltrange
+                self.tilt_angle = tilt;
+                [pos, mag] = self.calculateHK(hs,ks);
                 if self.killZero ==1
                     mag(round(pos(:,1),2) == 0 & round(pos(:,2),2) ==0) = 0;
                 end
