@@ -54,8 +54,8 @@ s.FaceAlpha = 0.35;
 s.FaceLighting = 'Gouraud';
 
 m.setkeV(keV)
-m.setBWColor(0)
-m.setTiltVal(0);
+%m.setBWColor(0)
+%m.setTiltVal(0);
 m.setRotation(0);
 m.setKillZero(true)
 m.drawEwald;

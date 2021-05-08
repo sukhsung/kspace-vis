@@ -215,12 +215,46 @@ classdef recip_2Dlattice < handle
             self.intensityFactor = self.intensityFactor/intensityScal;
         end
         
+        
+        % Draw full 3D recip structure
+        function [pos, mag] = draw3DHK(self,hs,ks,drawUnitCell,fig)
+            figure(fig);
+            
+            self.setKzMode('constant');
+            kzs = linspace(-self.kzExtent,self.kzExtent,2^8);
+                        
+            intensityScal = 5;            
+            self.intensityFactor = intensityScal * self.intensityFactor;
+            
+            pos =[];    mag = [];
+            for kz = kzs
+                self.setKzVal(kz); 
+                [pos_cur,mag_cur] = self.calculateHK(hs,ks);
+                pos = [pos;pos_cur];
+                mag = [mag;mag_cur];
+            end
+            self.posmagDrawPhase(pos,mag,fig);
+            
+            if drawUnitCell
+                % Draw a hexagon around first order Bragg peak
+                hold on
+                [x, y] = self.unitCellOutline();
+                plot(x,y,'k')
+            end
+            
+            title(self.title_str)
+            axis equal off
+            view([17,36])
+            
+            self.intensityFactor = self.intensityFactor/intensityScal;
+        end
+        
         % Draw side view of structure given hk indices
         function [pos, mag] = drawSideView(self,hs,ks,xpos,fig)
             self.setKzMode('constant')
             self.setIntcut(0)
             
-            intensityScal = 30;            
+            intensityScal = 1;            
             self.intensityFactor = intensityScal * self.intensityFactor;
             kzs = linspace(-self.kzExtent,self.kzExtent,2^8);
             
