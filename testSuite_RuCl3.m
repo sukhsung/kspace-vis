@@ -16,8 +16,7 @@ m.setkeV(200);
 m.setKillZero(1);
 m.setIntensityFactor(1);
 m.draw3D(true,figure);
-
-return
+%%
 hs = [0   0 -1 -1 -1 -1  1  1  1  1  2 -2]';
 ks = [-1 -2 -2 -1  1  2 -2 -1  1  2 -2 -2]';
 m.draw3DHK(hs,ks,drawRect,figure);

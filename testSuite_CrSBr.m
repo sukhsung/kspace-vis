@@ -9,7 +9,7 @@ m.numLayer=1;
 m.setTitle('');
 m.setKzExtent( 3.9*pi/m.lambda )
 
-m.setSpotcut(3);
+m.setSpotcut(3.5);
 %% Test draw3D
 drawRect = true;
 hs = [0   0 -1 -1 -1 -1  1  1  1  1  2 -2]';

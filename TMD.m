@@ -31,8 +31,8 @@ classdef TMD < recipHexLattice
             mag = ones(length(pos),1);
 
             a0 = mag;
-            b0 = mag.*exp(-2i*pi/3*(hs+ks));
-            c0 = mag.*exp(-4i*pi/3*(hs+ks));            
+            b0 = mag.*exp(-2i*pi/3*(2*hs+ks));
+            c0 = mag.*exp(-2i*pi/3*(hs+2*ks));            
             
             
             magTm = self.applyScat(pos,a0,self.tm);
@@ -51,8 +51,8 @@ classdef TMD < recipHexLattice
             mag = ones(length(pos),1);
 
             a0 = mag;
-            b0 = mag.*exp(-2i*pi/3*(hs+ks));
-            c0 = mag.*exp(-4i*pi/3*(hs+ks));
+            b0 = mag.*exp(-2i*pi/3*(2*hs+ks));
+            c0 = mag.*exp(-2i*pi/3*(hs+2*ks));   
             
             
             magTm = self.applyScat(pos,a0,self.tm);
@@ -81,8 +81,8 @@ classdef TMD < recipHexLattice
             mag = ones(length(pos),1);
 
             a0 = mag;
-            b0 = mag.*exp(-2i*pi/3*(hs+ks));
-            c0 = mag.*exp(-4i*pi/3*(hs+ks));
+            b0 = mag.*exp(-2i*pi/3*(2*hs+ks));
+            c0 = mag.*exp(-2i*pi/3*(hs+2*ks));   
             
             
             magTm = self.applyScat(pos,c0,self.tm);
@@ -123,8 +123,8 @@ classdef TMD < recipHexLattice
             mag = ones(length(pos),1);
 
             a0 = mag;
-            b0 = mag.*exp(-2i*pi/3*(hs+ks));
-            c0 = mag.*exp(-4i*pi/3*(hs+ks));                  
+            b0 = mag.*exp(-2i*pi/3*(2*hs+ks));
+            c0 = mag.*exp(-2i*pi/3*(hs+2*ks));                 
             
             
             magTm = self.applyScat(pos,a0,self.tm);
@@ -178,22 +178,19 @@ classdef TMD < recipHexLattice
         
         % setters
         function setTm(self,val)
-            self.tm = val;
+            self.tm.Z = val;
+            self.tm.fparams = parseElements(val);
         end
         
         function setCh(self,val)
-            self.ch = val;
+            self.ch.Z = val;
+            self.ch.fparams = parseElements(val);
         end
         
         function setNumLayer(self,val)
             self.numLayer = val;
         end
         
-%         function setA(self,val)
-%             self.a = val;
-%             self.area = sqrt(3)*val^2/2;        
-%         end
-%         
         function setLambda_tmch(self, val)
             self.lambda_tmch = val;
         end

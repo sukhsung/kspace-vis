@@ -2,15 +2,19 @@ classdef CrSBr < recipRectLattice
     %TMDS
     properties (SetAccess = public, GetAccess = public)
         numLayer
-        Cr = 24
-        S  = 16
-        Br = 35
+        Cr
+        S 
+        Br
     end
     
     methods        
         function obj = CrSBr()
             obj = obj@recipRectLattice( [4.767; 3.506] );
             obj.setLambda(7.965);
+            
+            obj.setCr(24);
+            obj.setS(16);
+            obj.setBr(35);
             
         end
         
@@ -89,6 +93,21 @@ classdef CrSBr < recipRectLattice
         
         function setName(self, val)
             self.name = val;
+        end
+        % setters
+        function setCr(self,val)
+            self.Cr.Z = val;
+            self.Cr.fparams = parseElements(val);
+        end
+        % setters
+        function setS(self,val)
+            self.S.Z = val;
+            self.S.fparams = parseElements(val);
+        end
+        % setters
+        function setBr(self,val)
+            self.Br.Z = val;
+            self.Br.fparams = parseElements(val);
         end
         
     end

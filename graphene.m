@@ -2,6 +2,7 @@ classdef graphene < recipHexLattice
 
     properties (SetAccess = private, GetAccess = public)
         theta = deg2rad(5);
+        carbon
     end
     
     
@@ -15,6 +16,7 @@ classdef graphene < recipHexLattice
             obj = obj@recipHexLattice( 2.467 );
             obj.setLambda(3.346);
             obj.setKzExtent(2*pi/obj.lambda);
+            obj.setCarbon(6);
             if nargin == 0
                 obj.setStacking('C')
             elseif nargin == 1
@@ -48,8 +50,8 @@ classdef graphene < recipHexLattice
             
             
             a0 = self.fg_hk(hs,ks);
-            b0 = self.fg_hk(hs,ks).*exp(-2i*pi/3*(hs+ks));
-            c0 = self.fg_hk(hs,ks).*exp(-4i*pi/3*(hs+ks));            
+            b0 = self.fg_hk(hs,ks).*exp(-2i*pi/3*(2*hs+ks));
+            c0 = self.fg_hk(hs,ks).*exp(-2i*pi/3*(hs+2*ks));            
             
             if strcmp(self.stacking,'uTBG')
                 
@@ -79,18 +81,24 @@ classdef graphene < recipHexLattice
                 mag = mag.*exp(1i.*self.lambda.*kz.*(1+length(self.stacking))./2);
             end
             if self.includeScat
-                mag = self.applyScat(pos,mag,6);
+                mag = self.applyScat(pos,mag,self.carbon);
             end    
             
         end
         
         function fg = fg_hk(self,h,k)
-            fg = 8*pi^2/self.area*exp(-1i*pi/3*(h+k)).*cos(pi/3*(h+k));
+            fg = 8*pi^2/self.area*exp(-1i*pi/3*(2*h+k)).*cos(pi/3*(2*h+k));
         end
         
         function [pos,mag] = calculate(self)
             [~,h,k] = recip2DMeshGrid(self);
             [pos, mag] = self.calculateHK(h,k);
+        end
+        
+        % setters
+        function setCarbon(self,val)
+            self.carbon.Z = val;
+            self.carbon.fparams = parseElements(val);
         end
         
     end

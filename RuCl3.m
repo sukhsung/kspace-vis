@@ -1,17 +1,17 @@
-classdef RuCl3 < recipHexLattice
+classdef RuCl3 < TmHl3
     %https://materials.springer.com/isp/crystallographic/docs/sd_1300000
     properties (SetAccess = public, GetAccess = public)
-        Z_Ru = 44
-        Z_Cl = 17
-        lambda_RuCl = 2.657/2;
-        name
-        numLayer = 1;
     end
     
     methods        
         function obj = RuCl3()
-            obj = obj@recipHexLattice(5.97900);
-            obj.lambda = 5.678;
+            obj = obj@TmHl3(5.97900);
+            obj.setLambda(5.86);
+            obj.setLambda_tmhl(2.657/2);
+            obj.lambda = 5.7233;
+            obj.setTm(44);
+            obj.setHl(17);
+            obj.numLayer = 1;
         end
         
         
@@ -32,35 +32,34 @@ classdef RuCl3 < recipHexLattice
             
 %             mag = ones(length(pos),1);
 %             
-%             magRu = mag.*(1+exp(-4i*pi/3*(hs+ks)));
+%             magRu = mag.*(1+exp(-2i*pi/3*(2*hs+ks)));
 %             magClt = mag.*(...
 %                 exp(-2i*pi/3*hs) +...
-%                 exp(-4i*pi/3*ks) +...
-%                 exp(-2i*pi/3*(2*hs+ks) ) );
+%                 exp(-2i*pi/3*ks) +...
+%                 exp(-4i*pi/3*(hs+ks) ) );
 %             magClb = mag.*(...
 %                 exp(-4i*pi/3*hs) +...
-%                 exp(-2i*pi/3*ks) +...
-%                 exp(-2i*pi/3*(hs+2*ks) ) );
+%                 exp(-4i*pi/3*ks) +...
+%                 exp(-2i*pi/3*(hs+ks) ) );
 %             
 %             
 %             
-%             magRu = self.applyScat(pos,magRu,self.Z_Ru);
-%             magClt = self.applyScat(pos,magClt,self.Z_Cl);
-%             magClb = self.applyScat(pos,magClb,self.Z_Cl);
+%             magRu = self.applyScat(pos,magRu,self.tm);
+%             magClt = self.applyScat(pos,magClt,self.hl);
+%             magClb = self.applyScat(pos,magClb,self.hl);
 %             
-%             mag = magRu + exp(-1i*self.lambda_RuCl*kz).*magClt...
-%                         + exp(+1i*self.lambda_RuCl*kz).*magClb;
+%             mag = magRu + exp(-1i*self.lambda_tmhl*kz).*magClt...
+%                         + exp(+1i*self.lambda_tmhl*kz).*magClb;
+%                     
+            %Ver Simplified
+            magRu = (1+exp(-2i*pi/3*(2*hs+ks)));
+%             
+            magCl = exp(-1i*pi*hs).*( 2*cos(pi*hs/3-kz*self.lambda_tmhl)) + ...
+                    exp(-1i*pi*ks).*( 2*cos(pi*ks/3-kz*self.lambda_tmhl)) + ...
+                    exp(-1i*pi*(hs+ks)).*( 2*cos(pi*(hs+ks)/3+kz*self.lambda_tmhl));
                     
-            %Ver YMG
-            magRu = 2*exp(-2i*pi/3*(hs+ks)).*cos(2*pi/3*(hs+ks));
-            
-            magCl = 2*exp(-1i*pi*hs).*cos(pi*hs/3 + kz*self.lambda_RuCl) + ...
-                    2*exp(-1i*pi*ks).*cos(pi*ks/3 - kz*self.lambda_RuCl) + ...
-                    exp(-2i*pi/3*(hs+ks)).*( ...
-                        exp(-1i*(2*pi*ks/3 + kz*self.lambda_RuCl)) +...
-                        exp(-1i*(2*pi*hs/3 - kz*self.lambda_RuCl)) );
-            mag = self.applyScat(pos,magRu,self.Z_Ru) + ...
-                self.applyScat(pos,magCl,self.Z_Cl);
+            mag = self.applyScat(pos,magRu,self.tm) + ...
+                self.applyScat(pos,magCl,self.tm);
                     
         end
         
@@ -75,24 +74,21 @@ classdef RuCl3 < recipHexLattice
         
         % setters
         function setTm(self,val)
-            self.tm = val;
+            self.tm.Z = val;
+            self.tm.fparams = parseElements(val);
         end
         
-        function setCh(self,val)
-            self.ch = val;
+        function setHl(self,val)
+            self.hl.Z = val;
+            self.hl.fparams = parseElements(val);
         end
         
         function setNumLayer(self,val)
             self.numLayer = val;
         end
-        
-%         function setA(self,val)
-%             self.a = val;
-%             self.area = sqrt(3)*val^2/2;        
-%         end
 %         
-        function setLambda_tmch(self, val)
-            self.lambda_tmch = val;
+        function setLambda_tmhl(self, val)
+            self.lambda_tmhl = val;
         end
         
         function setName(self, val)

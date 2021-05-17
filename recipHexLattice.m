@@ -13,9 +13,9 @@ classdef recipHexLattice < recip_2Dlattice
             obj.bs = obj.b*[1, 1];
             
             obj.a1 = obj.a * [cosd(0) ; sind(0)];
-            obj.a2 = obj.a * [cosd(60); sind(60)];
+            obj.a2 = obj.a * [cosd(120); sind(120)];
             
-            obj.b1 = obj.b * [cosd(330); sind(330)];
+            obj.b1 = obj.b * [cosd(30); sind(30)];
             obj.b2 = obj.b * [cosd(90); sind(90)];
             
             obj.area = (sqrt(3)*obj.a^2/2);   

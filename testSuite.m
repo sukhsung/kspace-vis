@@ -11,10 +11,11 @@ m.setTheta(0)
 m.setTitle('');
 
 
-m.setSpotcut(1);
+m.setSpotcut(2);
 % Test draw3D
 drawHexagon = true;
 m.draw3D(drawHexagon,figure);
+
 % Test Tilt Pattern
 m.setkeV(200);
 m.setKillZero(1);
@@ -41,7 +42,7 @@ xpos = [-1 0 1]';
 m.drawSideView(hs,ks,xpos,figure)
 
 %% Test MoS2
-m = MoS2('2HbxN');
+m = TaSe2('2Ha');
 m.setNumLayer(2)
 %m.
 m.setTitle('');
@@ -50,7 +51,7 @@ m.setSpotcut(2);
 % Test draw3D
 drawHexagon = true;
 m.draw3D(drawHexagon,figure);
-
+%%
 % Test Tilt Pattern
 m.setkeV(200);
 m.setKillZero(1);
