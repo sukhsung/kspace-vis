@@ -64,10 +64,38 @@ classdef RuCl3 < TmHl3
         end
         
         
+        function [pos, mag] = calculateHK_nL(self,hs,ks)
+            
+            [pos,mag1L] = self.calculateHK_1L(hs,ks);
+            
+            
+            
+            mag = zeros(size( mag1L ));
+            
+            kz = pos(:,3);
+            
+            for indLayer = 1:self.numLayer
+                
+                if rem(indLayer,3) == 1
+                    mag = mag+mag1L.*exp(-1i*kz*self.lambda*indLayer);
+                elseif rem(indLayer,3) == 2
+                    mag = mag+...
+                        mag1L.*exp(-1i*(2*pi/3*(2*hs+ks)+kz*self.lambda*indLayer));
+                elseif rem(indLayer,3) == 0
+                    mag = mag+...
+                        mag1L.*exp(-1i*(2*pi/3*(hs+2*ks)+kz*self.lambda*indLayer));
+                end
+            
+            end
+            
+            mag = mag.*exp(1i*kz*self.lambda*(self.numLayer+1)/2);
+            
+                    
+        end
+        
+        
         function [pos, mag] = calculateHK(self,hs,ks)
-           if self.numLayer == 1
-               [pos, mag] = calculateHK_1L(self,hs,ks);
-           end
+               [pos, mag] = calculateHK_nL(self,hs,ks);
         end
         
                 

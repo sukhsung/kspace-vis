@@ -4,7 +4,7 @@ close all
 
 %% Test CrSBr
 m = RuCl3();
-m.numLayer=1;
+m.numLayer=3;
 
 m.setTitle('');
 m.setKzExtent( 3.9*pi/m.lambda )
