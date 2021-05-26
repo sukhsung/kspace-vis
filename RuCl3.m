@@ -59,7 +59,7 @@ classdef RuCl3 < TmHl3
                     exp(-1i*pi*(hs+ks)).*( 2*cos(pi*(hs+ks)/3+kz*self.lambda_tmhl));
                     
             mag = self.applyScat(pos,magRu,self.tm) + ...
-                self.applyScat(pos,magCl,self.tm);
+                  self.applyScat(pos,magCl,self.hl);
                     
         end
         
