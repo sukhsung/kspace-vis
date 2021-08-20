@@ -6,8 +6,8 @@ function fparams  = parseElements( el )
     f = table2struct(t(el,30:41));
     
     fparams.a = [f.a1, f.a2, f.a3];
-    fparams.b = [f.b1, f.b2, f.d3];
-    fparams.c = [f.c1, f.b2, f.d3];
-    fparams.d = [f.d1, f.b2, f.d3];
+    fparams.b = [f.b1, f.b2, f.b3];
+    fparams.c = [f.c1, f.c2, f.c3];
+    fparams.d = [f.d1, f.d2, f.d3];
     
 end
