@@ -300,8 +300,8 @@ classdef recip_2Dlattice < handle
             hold(ax,'on')
             axis(ax,'equal')
             scatter(pos(:,1),pos(:,2),1000*int,rgb,'.')
-            phi = self.tilt_axis;
-            plot( self.bs(1)*linspace(-sin(phi),sin(phi)),self.bs(1)*linspace(-cos(phi),cos(phi)));
+            phi = self.tilt_axis+pi/2;
+            plot( self.bs(1)*linspace(-cos(phi),cos(phi)),self.bs(1)*linspace(-sin(phi),sin(phi)));
             
             if isempty(self.title_str)
                 self.setTitle('')

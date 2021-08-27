@@ -4,14 +4,14 @@ close all
 
 %% Test Graphene
 
-m = graphene('AC');
+m = graphene('AB');
 m.rnd = 2;
 m.setTheta(0)
 
 m.setTitle('');
 
 
-m.setSpotcut(2);
+m.setSpotcut(1);
 % Test draw3D
 drawHexagon = true;
 m.draw3D(drawHexagon,figure);

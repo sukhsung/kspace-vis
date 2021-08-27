@@ -43,6 +43,17 @@ classdef RuCl3_buckled < TmHl3
                     exp(-4i*pi*ks/3).* exp(- 1i*kz.*(-self.lambda_tmhl+self.dClb(2)) ) + ...
                     exp(-2i*pi*(hs+ks)/3).*exp( - 1i*kz.*(-self.lambda_tmhl+self.dClb(3)) );
                 
+                
+            magRu = (1+exp(-2i*pi/3*(2*hs+ks)));
+%             
+            magCl = exp(-1i*pi*hs).*( 2*cos(pi*hs/3-kz*self.lambda_tmhl)) + ...
+                    exp(-1i*pi*ks).*( 2*cos(pi*ks/3-kz*self.lambda_tmhl)) + ...
+                    exp(-1i*pi*(hs+ks)).*( 2*cos(pi*(hs+ks)/3+kz*self.lambda_tmhl));
+                    
+            mag = self.applyScat(pos,magRu,self.tm) + ...
+                  self.applyScat(pos,magCl,self.hl);
+                
+                
             mag = self.applyScat(pos,magRu,self.tm) + ...
                   self.applyScat(pos,magCl,self.hl);
 

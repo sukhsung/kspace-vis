@@ -1,6 +1,7 @@
 classdef RuCl3 < TmHl3
     %https://materials.springer.com/isp/crystallographic/docs/sd_1300000
     properties (SetAccess = public, GetAccess = public)
+        lambda_Ru
     end
     
     methods        
@@ -12,6 +13,8 @@ classdef RuCl3 < TmHl3
             obj.setTm(44);
             obj.setHl(17);
             obj.numLayer = 1;
+            obj.lambda_Ru = 0;
+            
         end
         
         
@@ -52,7 +55,8 @@ classdef RuCl3 < TmHl3
 %                         + exp(+1i*self.lambda_tmhl*kz).*magClb;
 %                     
             %Ver Simplified
-            magRu = (1+exp(-2i*pi/3*(2*hs+ks)));
+            magRu = (exp(-1i*kz*self.lambda_Ru/2)+exp(1i*kz*self.lambda_Ru/2).*exp(-2i*pi/3*(2*hs+ks)));
+%            magRu = (1+*exp(-2i*pi/3*(2*hs+ks)));
 %             
             magCl = exp(-1i*pi*hs).*( 2*cos(pi*hs/3-kz*self.lambda_tmhl)) + ...
                     exp(-1i*pi*ks).*( 2*cos(pi*ks/3-kz*self.lambda_tmhl)) + ...
