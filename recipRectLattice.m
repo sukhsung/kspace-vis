@@ -19,8 +19,8 @@ classdef recipRectLattice < recip_2Dlattice
         
         function [x,y] = unitCellOutline( self )
             b1 = self.bs(1); b2 = self.bs(2);
-            x = [b1, b1, 0, -b1, -b1, -b1, 0, b1, b1];
-            y = [ 0 ,b2,b2,  b2, 0 ,-b2, -b2, -b2, 0];
+            x = [b1, -b1, -b1,  b1, b1];
+            y = [b2,  b2, -b2, -b2, b2];
         end
     end
 end
