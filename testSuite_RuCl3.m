@@ -8,14 +8,21 @@ m.numLayer=1;
 
 m.setTitle('');
 m.setKzExtent( 3.9*pi/m.lambda )
-m.lambda_Ru = 0;%.5;
-m.setSpotcut(2);
+m.lambda_Ru = 0;
+m.setSpotcut(5);
 %% Test draw3D
 drawRect = true;
 m.setkeV(80);
-m.setKillZero(1);
+m.setKillZero(2);
 m.setIntensityFactor(1);
 m.draw3D(true,figure);
+%%
+m.setIntensityFactor(10)
+m.setKzMode('constant');
+m.setKzVal( 0);
+m.draw2D(figure)
+axis equal
+view([0,90])
 %%
 hs = [0   0 -1 -1 -1 -1  1  1  1  1  2 -2]';
 ks = [-1 -2 -2 -1  1  2 -2 -1  1  2 -2 -2]';
