@@ -31,8 +31,8 @@ function [varargout] = indexedMeshGrid(varargin)
     end
     
     
-    
-    [h,k,l] = ndgrid(-spotcut:spotcut,-spotcut:spotcut,-spotcut:spotcut);
+    spotmax = ceil(spotcut);
+    [h,k,l] = ndgrid(-spotmax:spotmax,-spotmax:spotmax,-spotmax:spotmax);
     cutoff = sqrt(dot(a1,a1))*spotcut*1.1;    %k space cutoff
     %cutoff = sqrt(dot(a1,a1))*sqrt(3)*1.1;    %k space cutoff
 
